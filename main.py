@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import re
-from datetime import datetime
 
 import pandas as pd
 
@@ -14,10 +13,13 @@ logger = logging.getLogger()
 
 if __name__ == '__main__':
     pdf_folder_path = "resources/relatech"
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     json_array = []
+    new_files = []  # Lista per memorizzare i nuovi file da elaborare
+    checkpoint_file = "resources/checkpoints/processed_files.txt"
+    processed_files = FunctionsV2.load_processed_files(checkpoint_file)  # Carica i file già elaborati
+
     for filename in os.listdir(pdf_folder_path):
-        if filename.endswith('.pdf'):
+        if filename.endswith('.pdf') and filename not in processed_files:
             pdf_path = os.path.join(pdf_folder_path, filename)
             logger.info(f"Processing file: {filename}")
             text = FunctionsV2.extract_pdf_data(pdf_folder_path + "/" + filename)
@@ -30,19 +32,28 @@ if __name__ == '__main__':
             data = json.loads(response_copilot)
             json_array.append(data)
 
-    df = pd.DataFrame(json_array)
+            new_files.append(filename)
 
-    transformed_df = Transformations.transform_df(df, Constants.columns_to_select)
+            if new_files:
+                df = pd.DataFrame(json_array)
 
-    print(transformed_df.to_string(index=False))
+                transformed_df = Transformations.transform_df(df, Constants.columns_to_select)
 
-    csv_path = f"output/relatech_buste_paga_history_{timestamp}.csv"
-    output_folder = "output"
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-        logger.info(f"Directory '{output_folder}' creata.")
+                print(transformed_df.to_string(index=False))
 
-    # Salva il DataFrame trasformato come CSV
-    transformed_df.to_csv(csv_path, index=False)
 
-    print(f"File CSV salvato in: {csv_path}")
+                csv_path = f"output/relatech_buste_paga_history.csv"
+                output_folder = "output"
+                if not os.path.exists(output_folder):
+                    os.makedirs(output_folder)
+                    logger.info(f"Directory '{output_folder}' creata.")
+
+                file_exists = os.path.exists(csv_path)
+
+                # Salva il DataFrame trasformato come CSV
+                transformed_df.to_csv(csv_path, mode='a', header=not file_exists, index=False)
+                logger.info(f"Nuovi dati aggiunti al file CSV consolidato: {csv_path}")
+
+                FunctionsV2.update_checkpoint(checkpoint_file, new_files)
+            else:
+                logger.info("Nessun nuovo file da elaborare.")

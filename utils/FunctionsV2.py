@@ -1,5 +1,6 @@
 import logging
 import time
+import os
 
 import pdfplumber
 from selenium import webdriver
@@ -53,7 +54,7 @@ def extract_pdf_data(pdf_path):
 
 def run_copilot(input_text):
     """
-    Automazione dell'interazione con il sito Copilot di Microsoft.
+    Automazione dell'interazione con il sito Copilot di Microsoft con logica di fallback.
 
     Parametri:
     input_text (str): Il testo non formattato che verrà analizzato da Copilot.
@@ -70,35 +71,50 @@ def run_copilot(input_text):
         logger.info("Caricamento della pagina Copilot.")
         driver.get("https://copilot.microsoft.com/onboarding")
 
-        # Attendere che il pulsante 'Inizia' sia cliccabile e fare clic
-        logger.info("Attesa per il pulsante 'Inizia'.")
-        WebDriverWait(driver, 10).until(
-            ec.element_to_be_clickable((By.XPATH, '//*[@title="Inizia"]'))
-        ).click()
-        logger.info("Pulsante 'Inizia' cliccato.")
+        # Tentativo di cliccare su "Inizia"
+        try:
+            logger.info("Tentativo di cliccare sul pulsante 'Inizia'.")
+            WebDriverWait(driver, 5).until(
+                ec.element_to_be_clickable((By.XPATH, '//*[@title="Inizia"]'))
+            ).click()
+            logger.info("Pulsante 'Inizia' cliccato.")
+        except Exception:
+            logger.warning("Pulsante 'Inizia' non trovato. Procedo al passaggio successivo.")
 
-        # Interazione con la casella di input per il nome
-        logger.info("Inserimento 'Christian' nella casella di input.")
-        WebDriverWait(driver, 10).until(
-            ec.presence_of_element_located((By.ID, "userInput"))
-        ).send_keys("Christian", Keys.RETURN)
+        # Tentativo di inserire "Christian"
+        try:
+            logger.info("Tentativo di inserire 'Christian' nella casella di input.")
+            WebDriverWait(driver, 5).until(
+                ec.presence_of_element_located((By.ID, "userInput"))
+            ).send_keys("Christian", Keys.RETURN)
+            logger.info("'Christian' inserito con successo.")
+        except Exception:
+            logger.warning("Casella di input per 'Christian' non trovata. Procedo al passaggio successivo.")
 
-        # Procedere al passo successivo (clicca 'Avanti')
-        logger.info("Attesa per il pulsante 'Avanti'.")
-        WebDriverWait(driver, 10).until(
-            ec.element_to_be_clickable((By.XPATH, '//*[@title="Avanti"]'))
-        ).click()
-        logger.info("Pulsante 'Avanti' cliccato.")
+        # Tentativo di cliccare su "Avanti"
+        try:
+            logger.info("Tentativo di cliccare sul pulsante 'Avanti'.")
+            WebDriverWait(driver, 5).until(
+                ec.element_to_be_clickable((By.XPATH, '//*[@title="Avanti"]'))
+            ).click()
+            logger.info("Pulsante 'Avanti' cliccato.")
+        except Exception:
+            logger.warning("Pulsante 'Avanti' non trovato. Procedo al passaggio successivo.")
 
-        # Composizione della query e invio
+        # Invio della query
         query = f"Estrai le seguenti informazioni, se presenti, in formato json su una sola riga: {concat_fields(Constants.info_to_extract)} dal seguente testo non formattato: {input_text}"
         logger.info("Invio della query a Copilot.")
-        question_box = WebDriverWait(driver, 10).until(
-            ec.presence_of_element_located((By.ID, "userInput"))
-        )
-        question_box.send_keys(query, Keys.RETURN)
+        try:
+            question_box = WebDriverWait(driver, 10).until(
+                ec.presence_of_element_located((By.ID, "userInput"))
+            )
+            question_box.send_keys(query, Keys.RETURN)
+            logger.info("Query inviata con successo.")
+        except Exception:
+            logger.error("Casella di input per la query non trovata. Interazione fallita.")
+            return None
 
-        # Attendere la risposta e stampare il testo
+        # Attesa della risposta
         logger.info("Attesa della risposta da Copilot.")
         time.sleep(10)
         response_element = WebDriverWait(driver, 10).until(
@@ -146,3 +162,39 @@ def select_columns_from_df(columns, df):
         raise ValueError(f"Le seguenti colonne non sono presenti nel DataFrame: {missing_columns}")
 
     return df[columns]
+
+# Funzione per caricare i file già elaborati dal checkpoint
+def load_processed_files(checkpoint_file):
+    """
+    Carica l'elenco dei file già elaborati dal file di checkpoint.
+
+    Parameters:
+        checkpoint_file (str): Percorso del file di checkpoint.
+
+    Returns:
+        set: Insieme dei nomi dei file già elaborati.
+    """
+    if os.path.exists(checkpoint_file):
+        logger.info(f"Caricamento file elaborati dal checkpoint: {checkpoint_file}")
+        with open(checkpoint_file, 'r') as f:
+            processed_files = set(f.read().splitlines())
+            logger.info(f"File elaborati caricati: {len(processed_files)} file trovati.")
+            return processed_files
+    else:
+        logger.info(f"Nessun file di checkpoint trovato: {checkpoint_file}. Restituisco un set vuoto.")
+        return set()
+
+# Funzione per aggiornare il checkpoint con i nuovi file elaborati
+def update_checkpoint(checkpoint_file, new_files):
+    """
+    Aggiorna il file di checkpoint aggiungendo i nuovi file elaborati.
+
+    Parameters:
+        checkpoint_file (str): Percorso del file di checkpoint.
+        new_files list(str): Insieme dei nuovi file elaborati da aggiungere.
+    """
+    logger.info(f"Aggiornamento del checkpoint con {len(new_files)} nuovi file.")
+    with open(checkpoint_file, 'a') as f:
+        for file in new_files:
+            f.write(file + "\n")
+    logger.info(f"Checkpoint aggiornato con successo: {checkpoint_file}")
