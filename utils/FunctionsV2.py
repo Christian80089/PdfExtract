@@ -1,8 +1,10 @@
 import logging
-import time
 import os
+import time
 
+import pandas as pd
 import pdfplumber
+from openpyxl.reader.excel import load_workbook
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -163,6 +165,7 @@ def select_columns_from_df(columns, df):
 
     return df[columns]
 
+
 # Funzione per caricare i file già elaborati dal checkpoint
 def load_processed_files(checkpoint_file):
     """
@@ -184,6 +187,7 @@ def load_processed_files(checkpoint_file):
         logger.info(f"Nessun file di checkpoint trovato: {checkpoint_file}. Restituisco un set vuoto.")
         return set()
 
+
 # Funzione per aggiornare il checkpoint con i nuovi file elaborati
 def update_checkpoint(checkpoint_file, new_files):
     """
@@ -191,10 +195,58 @@ def update_checkpoint(checkpoint_file, new_files):
 
     Parameters:
         checkpoint_file (str): Percorso del file di checkpoint.
-        new_files list(str): Insieme dei nuovi file elaborati da aggiungere.
+        new_files: Insieme dei nuovi file elaborati da aggiungere.
     """
     logger.info(f"Aggiornamento del checkpoint con {len(new_files)} nuovi file.")
     with open(checkpoint_file, 'a') as f:
         for file in new_files:
             f.write(file + "\n")
     logger.info(f"Checkpoint aggiornato con successo: {checkpoint_file}")
+
+
+# Cast delle colonne con gestione degli errori
+def cast_columns_with_defaults(df, schema, default_values):
+    for col, dtype in schema.items():
+        if col in df.columns:
+            try:
+                # Prova a castare la colonna al tipo definito nello schema
+                df.loc[:, col] = df[col].astype(dtype)
+                logger.info(f"Colonna '{col}' castata con successo al tipo {dtype}.")
+            except Exception as e:
+                # In caso di errore, sostituisci con il valore predefinito
+                logger.warning(f"Errore nel cast della colonna '{col}' al tipo {dtype}: {e}")
+                default_value = default_values.get(dtype, None)
+                df[col] = default_value
+                logger.info(f"Colonna '{col}' riempita con valore predefinito: {default_value}.")
+        else:
+            # Se la colonna non esiste, aggiungila con il valore predefinito
+            default_value = default_values.get(dtype, None)
+            df[col] = default_value
+            logger.info(f"Colonna '{col}' aggiunta al DataFrame con valore predefinito: {default_value}.")
+    return df
+
+
+def save_to_excel_in_append_mode(file_path, new_data):
+    """
+    Salva i dati nel file Excel in modalità append.
+
+    Parametri:
+    file_path (str): Percorso del file Excel.
+    new_data (DataFrame): Il nuovo DataFrame da aggiungere.
+    """
+    if not os.path.exists(file_path):
+        # Se il file non esiste, crea un nuovo file con i dati
+        new_data.to_excel(file_path, index=False, engine='openpyxl')
+        logger.info(f"File Excel creato: {file_path}")
+    else:
+        # Carica il file Excel esistente
+        workbook = load_workbook(file_path)
+        sheet = workbook.active
+
+        # Ottieni l'indice della prima riga vuota
+        start_row = sheet.max_row + 1
+
+        # Scrivi i nuovi dati sotto quelli esistenti
+        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            new_data.to_excel(writer, index=False, header=False, startrow=start_row - 1)
+        logger.info(f"Nuovi dati aggiunti al file Excel: {file_path}")

@@ -6,6 +6,7 @@ import re
 import pandas as pd
 
 from utils import FunctionsV2, Transformations, Constants
+from utils.FunctionsV2 import save_to_excel_in_append_mode
 
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -13,10 +14,14 @@ logger = logging.getLogger()
 
 if __name__ == '__main__':
     pdf_folder_path = "resources/relatech"
-    json_array = []
-    new_files = []  # Lista per memorizzare i nuovi file da elaborare
     checkpoint_file = "resources/checkpoints/processed_files.txt"
     processed_files = FunctionsV2.load_processed_files(checkpoint_file)  # Carica i file già elaborati
+
+    excel_path = "output/relatech_buste_paga_history.xlsx"
+    output_folder = "output"
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+        logger.info(f"Directory '{output_folder}' creata.")
 
     for filename in os.listdir(pdf_folder_path):
         if filename.endswith('.pdf') and filename not in processed_files:
@@ -30,30 +35,16 @@ if __name__ == '__main__':
             response_copilot = FunctionsV2.run_copilot(formatted_text)
 
             data = json.loads(response_copilot)
-            json_array.append(data)
 
-            new_files.append(filename)
+            # Trasforma il DataFrame per il file corrente
+            df = pd.DataFrame([data])  # Crea il DataFrame solo con i dati del file corrente
+            transformed_df = Transformations.transform_df(df, Constants.columns_to_select)
 
-            if new_files:
-                df = pd.DataFrame(json_array)
+            # Salva i dati trasformati in Excel
+            save_to_excel_in_append_mode(excel_path, transformed_df)
 
-                transformed_df = Transformations.transform_df(df, Constants.columns_to_select)
+            # Aggiorna il checkpoint con il file appena processato
+            FunctionsV2.update_checkpoint(checkpoint_file, [filename])
+            logger.info(f"File {filename} elaborato e salvato.")
 
-                print(transformed_df.to_string(index=False))
-
-
-                csv_path = f"output/relatech_buste_paga_history.csv"
-                output_folder = "output"
-                if not os.path.exists(output_folder):
-                    os.makedirs(output_folder)
-                    logger.info(f"Directory '{output_folder}' creata.")
-
-                file_exists = os.path.exists(csv_path)
-
-                # Salva il DataFrame trasformato come CSV
-                transformed_df.to_csv(csv_path, mode='a', header=not file_exists, index=False)
-                logger.info(f"Nuovi dati aggiunti al file CSV consolidato: {csv_path}")
-
-                FunctionsV2.update_checkpoint(checkpoint_file, new_files)
-            else:
-                logger.info("Nessun nuovo file da elaborare.")
+    logger.info("Elaborazione completata.")

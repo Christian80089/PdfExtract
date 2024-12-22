@@ -1,9 +1,12 @@
 import locale
 import logging
 
+import numpy as np
 import pandas as pd
 
 from utils import FunctionsV2, Constants
+from utils.Constants import schema, default_values
+from utils.FunctionsV2 import cast_columns_with_defaults
 
 # Configura il logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -18,10 +21,10 @@ def transform_df(df, columns_to_select):
 
     # Aggiungi colonne al DataFrame
     df["ragione_sociale_azienda"] = "Relatech Spa"
-    df["date_periodo_di_retribuzione"] = pd.to_datetime("10-" + df["periodo_di_retribuzione"], format="%d-%B %Y")
+    df["date_periodo_di_retribuzione"] = pd.to_datetime("01-" + df["periodo_di_retribuzione"], format="%d-%B %Y")
     df["string_periodo_di_retribuzione"] = df["periodo_di_retribuzione"]
     df["retribuzione_minima_lorda"] = df["totale_retribuzione_minima_lorda"]
-    df["percentuale_maggiorazione_ore_straordinario"] = "15"
+    df["percentuale_maggiorazione_ore_straordinario"] = 15
     df["irpef_pagata"] = df["ritenute_irpef"]
     df["note"] = "Script completato con successo"
 
@@ -37,6 +40,13 @@ def transform_df(df, columns_to_select):
         )
 
     selected_df = FunctionsV2.select_columns_from_df(columns_to_select, df)
+    selected_df = cast_columns_with_defaults(selected_df, schema, default_values)
+
+    # Arrotonda i valori float per eccesso a due cifre decimali
+    for column, dtype in schema.items():
+        if dtype == "float":
+            logger.info(f"Arrotondamento per eccesso della colonna '{column}' a due cifre decimali.")
+            selected_df[column] = np.ceil(selected_df[column] * 100) / 100
 
     logger.info(f"Selezionate {len(columns_to_select)} colonne: {columns_to_select}.")
     logger.info("Trasformazione completata.")
