@@ -206,6 +206,9 @@ def update_checkpoint(checkpoint_file, new_files):
 
 # Cast delle colonne con gestione degli errori
 def cast_columns_with_defaults(df, schema, default_values):
+    # Fai una copia esplicita del DataFrame
+    df = df.copy()
+
     for col, dtype in schema.items():
         if col in df.columns:
             try:
