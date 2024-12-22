@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import re
+from datetime import datetime
 
 import pandas as pd
 
@@ -13,6 +14,7 @@ logger = logging.getLogger()
 
 if __name__ == '__main__':
     pdf_folder_path = "resources/relatech"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     json_array = []
     for filename in os.listdir(pdf_folder_path):
         if filename.endswith('.pdf'):
@@ -33,3 +35,14 @@ if __name__ == '__main__':
     transformed_df = Transformations.transform_df(df, Constants.columns_to_select)
 
     print(transformed_df.to_string(index=False))
+
+    csv_path = f"output/relatech_buste_paga_history_{timestamp}.csv"
+    output_folder = "output"
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+        logger.info(f"Directory '{output_folder}' creata.")
+
+    # Salva il DataFrame trasformato come CSV
+    transformed_df.to_csv(csv_path, index=False)
+
+    print(f"File CSV salvato in: {csv_path}")
