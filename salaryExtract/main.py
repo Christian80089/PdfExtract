@@ -3,8 +3,8 @@ import logging
 import os
 import re
 import pandas as pd
-from utils import FunctionsV2, Transformations, Constants
-from utils.FunctionsV2 import save_to_excel_in_append_mode
+from salaryExtract.utils import Transformations, FunctionsV2, Constants
+from salaryExtract.utils.FunctionsV2 import save_to_excel_in_append_mode
 
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
