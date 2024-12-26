@@ -2,9 +2,11 @@ import json
 import logging
 import os
 import re
+
 import pandas as pd
+
 from salaryExtract.utils import Transformations, FunctionsV2, Constants
-from salaryExtract.utils.FunctionsV2 import save_to_excel_in_append_mode
+from salaryExtract.utils.FunctionsV2 import save_to_excel_in_append_mode, upload_file_to_drive
 
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -20,6 +22,8 @@ if __name__ == '__main__':
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
         logger.info(f"Directory '{output_folder}' creata.")
+
+    new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
 
     try:
         processed_files = FunctionsV2.load_processed_files(checkpoint_file)  # Carica i file già elaborati
@@ -52,8 +56,19 @@ if __name__ == '__main__':
                 FunctionsV2.update_checkpoint(checkpoint_file, [filename])
                 logger.info(f"File {filename} elaborato e salvato con successo.")
 
+                new_files_processed = True  # Imposta il flag a True
+
             except Exception as e:
                 # Gestione degli errori per ogni fase dell'elaborazione del file
                 logger.error(f"Errore durante l'elaborazione del file {filename}: {e}")
+
+    # # Salvataggio dell Excel su Google Drive
+    # if new_files_processed:
+    #     file_path = 'output/relatech_buste_paga_history.xlsx'
+    #     folder_id = '15IERLH9b3exM44tlFb34gP5xMUeaYxQk'
+    #     upload_file_to_drive(file_path, folder_id)
+    #     logger.info("File caricato su Google Drive.")
+    # else:
+    #     logger.info("Nessun nuovo file elaborato. Salto il caricamento su Google Drive.")
 
     logger.info("Elaborazione completata.")

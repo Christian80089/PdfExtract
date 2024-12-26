@@ -4,6 +4,9 @@ import time
 
 import pandas as pd
 import pdfplumber
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 from openpyxl.reader.excel import load_workbook
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -253,3 +256,42 @@ def save_to_excel_in_append_mode(file_path, new_data):
         with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
             new_data.to_excel(writer, index=False, header=False, startrow=start_row - 1)
         logger.info(f"Nuovi dati aggiunti al file Excel: {file_path}")
+
+def upload_file_to_drive(file_path, folder_id):
+    """
+    Carica un file su Google Drive. Se esiste già, lo sovrascrive.
+
+    Args:
+        file_path (str): Percorso del file da caricare.
+        folder_id (str): ID della cartella di Google Drive.
+    """
+    # Autenticazione
+    credentials = service_account.Credentials.from_service_account_file(
+        'resources/google/quiet-dimension-421414-f1378bc8723b.json',
+        scopes=["https://www.googleapis.com/auth/drive"]
+    )
+    service = build('drive', 'v3', credentials=credentials)
+
+    # Ottieni il nome del file
+    file_name = file_path.split('/')[-1]
+
+    # Cerca se il file esiste già nella cartella
+    query = f"'{folder_id}' in parents and name='{file_name}' and trashed=false"
+    response = service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
+    files = response.get('files', [])
+
+    # Se il file esiste, eliminalo
+    if files:
+        for existing_file in files:
+            service.files().delete(fileId=existing_file['id']).execute()
+        logger.info(f"File esistente '{file_name}' eliminato.")
+
+    # Carica il nuovo file
+    file_metadata = {
+        'name': file_name,
+        'parents': [folder_id]
+    }
+    media = MediaFileUpload(file_path, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+    logger.info(f"File '{file_name}' caricato con ID: {uploaded_file.get('id')}")
