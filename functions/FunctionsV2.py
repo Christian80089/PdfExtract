@@ -266,6 +266,8 @@ def upload_file_as_google_sheet(file_path, folder_id):
         file_path (str): Percorso del file da caricare.
         folder_id (str): ID della cartella di Google Drive.
     """
+    from os.path import splitext
+
     # Autenticazione
     credentials = service_account.Credentials.from_service_account_file(
         'resources/google/quiet-dimension-421414-f1378bc8723b.json',
@@ -273,11 +275,12 @@ def upload_file_as_google_sheet(file_path, folder_id):
     )
     service = build('drive', 'v3', credentials=credentials)
 
-    # Ottieni il nome del file
+    # Ottieni il nome del file senza estensione
     file_name = file_path.split('/')[-1]
+    base_name, _ = splitext(file_name)
 
-    # Cerca se il file esiste già nella cartella
-    query = f"'{folder_id}' in parents and name='{file_name}' and trashed=false"
+    # Cerca se il file esiste già nella cartella (senza considerare l'estensione)
+    query = f"'{folder_id}' in parents and name contains '{base_name}' and trashed=false"
     response = service.files().list(q=query, spaces='drive', fields='files(id, name)').execute()
     files = response.get('files', [])
 

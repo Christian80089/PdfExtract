@@ -4,9 +4,10 @@ import logging
 import numpy as np
 import pandas as pd
 
-from beRebelExtract.utils import FunctionsV2, Constants
+from beRebelExtract.utils import Constants
+from functions import FunctionsV2
 from beRebelExtract.utils.Constants import schema, default_values
-from beRebelExtract.utils.FunctionsV2 import cast_columns_with_defaults
+from functions.FunctionsV2 import cast_columns_with_defaults
 
 # Configura il logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

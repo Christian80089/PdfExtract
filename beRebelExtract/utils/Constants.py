@@ -5,10 +5,10 @@ info_to_extract = [
     "periodo_estratto_conto (è una string ed è mandatory, esempio: Novembre 2024)"
     "costo_al_km (è un double ed è mandatory",
     "targa (è una string ed è mandatory)",
-    "km_percorsi (è un intero ed è mandatory)",
-    "km_inclusi (è un intero ed è mandatory)",
-    "km_da_pagare (è un intero ed è mandatory)",
-    "km_residui (è un intero ed è mandatory)",
+    "km_percorsi (è un intero ed è mandatory - è il primo valore dei quattro)",
+    "km_inclusi (è un intero ed è mandatory - è il secondo valore dei quattro)",
+    "km_da_pagare (è un intero ed è mandatory - è il terzo valore dei quattro)",
+    "km_residui (è un intero ed è mandatory - è il quarto valore dei quattro)",
     "premio_di_conguaglio (è un double ed è mandatory)",
     "totale_pagato (è un double ed è mandatory)"
 ]

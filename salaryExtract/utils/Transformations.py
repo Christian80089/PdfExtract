@@ -4,9 +4,9 @@ import logging
 import numpy as np
 import pandas as pd
 
-from salaryExtract.utils import FunctionsV2, Constants
+from functions.FunctionsV2 import cast_columns_with_defaults, select_columns_from_df
+from salaryExtract.utils import Constants
 from salaryExtract.utils.Constants import schema, default_values
-from salaryExtract.utils.FunctionsV2 import cast_columns_with_defaults
 
 # Configura il logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -39,7 +39,7 @@ def transform_df(df, columns_to_select):
             lambda row: row["note"] + f"; Verificare {field} mancante" if pd.isnull(row[field]) else row["note"], axis=1
         )
 
-    selected_df = FunctionsV2.select_columns_from_df(columns_to_select, df)
+    selected_df = select_columns_from_df(columns_to_select, df)
     selected_df = cast_columns_with_defaults(selected_df, schema, default_values)
 
     # Arrotonda i valori float per eccesso a due cifre decimali

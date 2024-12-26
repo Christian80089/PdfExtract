@@ -1,12 +1,8 @@
 import json
-import logging
-import os
 import re
 
-import pandas as pd
-
-from beRebelExtract.utils import Transformations, FunctionsV2, Constants
-from beRebelExtract.utils.FunctionsV2 import save_to_excel_in_append_mode, upload_file_as_google_sheet
+from beRebelExtract.utils import Transformations
+from functions.FunctionsV2 import *
 
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,7 +22,7 @@ if __name__ == '__main__':
     new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
 
     try:
-        processed_files = FunctionsV2.load_processed_files(checkpoint_file)  # Carica i file già elaborati
+        processed_files = load_processed_files(checkpoint_file)  # Carica i file già elaborati
     except Exception as e:
         logger.error(f"Errore durante il caricamento dei file processati: {e}")
         processed_files = []
@@ -38,11 +34,11 @@ if __name__ == '__main__':
 
             try:
                 # Estrazione dei dati dal PDF
-                text = FunctionsV2.extract_pdf_data(pdf_path)
+                text = extract_pdf_data(pdf_path)
                 formatted_text = re.sub(r'\s+', ' ', text).strip()
 
                 # Interazione con Copilot
-                response_copilot = FunctionsV2.run_copilot(formatted_text)
+                response_copilot = run_copilot(formatted_text)
                 data = json.loads(response_copilot)
 
                 # Trasformazione dei dati in DataFrame
@@ -53,7 +49,7 @@ if __name__ == '__main__':
                 save_to_excel_in_append_mode(excel_path, transformed_df)
 
                 # Aggiorna il checkpoint
-                FunctionsV2.update_checkpoint(checkpoint_file, [filename])
+                update_checkpoint(checkpoint_file, [filename])
                 logger.info(f"File {filename} elaborato e salvato con successo.")
 
                 new_files_processed = True  # Imposta il flag a True
