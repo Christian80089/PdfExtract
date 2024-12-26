@@ -1,0 +1,255 @@
+import logging
+import os
+import time
+
+import pandas as pd
+import pdfplumber
+from openpyxl.reader.excel import load_workbook
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
+
+from beRebelExtract.utils import Constants
+
+# Configurazione del logger
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
+
+
+def concat_fields(fields):
+    """
+    Funzione che concatena una lista di campi in un'unica stringa separata da ' - '.
+
+    Parametri:
+    fields (list): Lista di stringhe da concatenare.
+
+    Ritorna:
+    str: Una stringa risultante dalla concatenazione dei campi.
+    """
+    logger.info("Concatenando i campi CSV.")
+    return ' - '.join(fields)
+
+
+def extract_pdf_data(pdf_path):
+    """
+    Estrae il testo da un file PDF specificato.
+
+    Parametri:
+    pdf_path (str): Il percorso del file PDF da cui estrarre il testo.
+
+    Ritorna:
+    str: Il testo estratto dal PDF. In caso di errore, restituisce una stringa vuota.
+    """
+    logger.info(f"Inizio estrazione dati dal PDF: {pdf_path}")
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            # Estrai il testo da tutte le pagine del PDF e concatenalo in un'unica stringa
+            full_text = ''.join([page.extract_text() for page in pdf.pages])
+        logger.info(f"Estrazione completata, {len(full_text)} caratteri estratti.")
+        return full_text
+    except Exception as e:
+        logger.error(f"Errore durante l'estrazione del PDF: {e}")
+        return ""  # Restituisce una stringa vuota in caso di errore
+
+
+def run_copilot(input_text):
+    """
+    Automazione dell'interazione con il sito Copilot di Microsoft con logica di fallback.
+
+    Parametri:
+    input_text (str): Il testo non formattato che verrà analizzato da Copilot.
+
+    Questo metodo automatizza l'interazione con Copilot: apre il sito, invia richieste e riceve risposte.
+    In caso di errori, vengono loggati e il browser viene chiuso correttamente.
+    """
+    logger.info("Inizio interazione con Copilot.")
+
+    driver = None
+    try:
+        # Avvia il browser Chrome
+        driver = webdriver.Chrome()
+        logger.info("Caricamento della pagina Copilot.")
+        driver.get("https://copilot.microsoft.com/onboarding")
+
+        # Tentativo di cliccare su "Inizia"
+        try:
+            logger.info("Tentativo di cliccare sul pulsante 'Inizia'.")
+            WebDriverWait(driver, 5).until(
+                ec.element_to_be_clickable((By.XPATH, '//*[@title="Inizia"]'))
+            ).click()
+            logger.info("Pulsante 'Inizia' cliccato.")
+        except Exception:
+            logger.warning("Pulsante 'Inizia' non trovato. Procedo al passaggio successivo.")
+
+        # Tentativo di inserire "Christian"
+        try:
+            logger.info("Tentativo di inserire 'Christian' nella casella di input.")
+            WebDriverWait(driver, 5).until(
+                ec.presence_of_element_located((By.ID, "userInput"))
+            ).send_keys("Christian", Keys.RETURN)
+            logger.info("'Christian' inserito con successo.")
+        except Exception:
+            logger.warning("Casella di input per 'Christian' non trovata. Procedo al passaggio successivo.")
+
+        # Tentativo di cliccare su "Avanti"
+        try:
+            logger.info("Tentativo di cliccare sul pulsante 'Avanti'.")
+            WebDriverWait(driver, 5).until(
+                ec.element_to_be_clickable((By.XPATH, '//*[@title="Avanti"]'))
+            ).click()
+            logger.info("Pulsante 'Avanti' cliccato.")
+        except Exception:
+            logger.warning("Pulsante 'Avanti' non trovato. Procedo al passaggio successivo.")
+
+        # Invio della query
+        query = f"Estrai le seguenti informazioni, in formato json su una sola riga: {concat_fields(Constants.info_to_extract)} dal seguente testo non formattato: {input_text}"
+        logger.info("Invio della query a Copilot.")
+        try:
+            question_box = WebDriverWait(driver, 10).until(
+                ec.presence_of_element_located((By.ID, "userInput"))
+            )
+            question_box.send_keys(query, Keys.RETURN)
+            logger.info("Query inviata con successo.")
+        except Exception:
+            logger.error("Casella di input per la query non trovata. Interazione fallita.")
+            return None
+
+        # Attesa della risposta
+        logger.info("Attesa della risposta da Copilot.")
+        time.sleep(10)
+        response_element = WebDriverWait(driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, '//*[@class="text-sm font-ligatures-none"]'))
+        )
+        logger.info("Risposta ricevuta da Copilot.")
+
+        response_text = response_element.text
+        logger.info(response_text)
+
+        return response_text
+
+    except Exception as e:
+        # In caso di errore durante l'interazione, viene loggato il messaggio di errore
+        logger.error(f"Si è verificato un errore durante l'interazione con Copilot: {e}")
+    finally:
+        # Garantiamo che il driver venga sempre chiuso, anche se si è verificato un errore
+        if driver:
+            try:
+                logger.info("Chiusura del browser.")
+                driver.quit()
+            except Exception as e:
+                logger.error(f"Errore durante la chiusura del browser: {e}")
+
+
+def select_columns_from_df(columns, df):
+    """
+    Seleziona specifiche colonne da un DataFrame.
+
+    Parameters:
+        columns (list): Lista di nomi di colonne da selezionare.
+        df (pd.DataFrame): DataFrame di input.
+
+    Returns:
+        pd.DataFrame: DataFrame con solo le colonne selezionate.
+    """
+    if not isinstance(columns, list):
+        raise ValueError("Il parametro 'columns' deve essere una lista di stringhe.")
+
+    if not all(isinstance(col, str) for col in columns):
+        raise ValueError("Tutti gli elementi della lista 'columns' devono essere stringhe.")
+
+    missing_columns = [col for col in columns if col not in df.columns]
+    if missing_columns:
+        raise ValueError(f"Le seguenti colonne non sono presenti nel DataFrame: {missing_columns}")
+
+    return df[columns]
+
+
+# Funzione per caricare i file già elaborati dal checkpoint
+def load_processed_files(checkpoint_file):
+    """
+    Carica l'elenco dei file già elaborati dal file di checkpoint.
+
+    Parameters:
+        checkpoint_file (str): Percorso del file di checkpoint.
+
+    Returns:
+        set: Insieme dei nomi dei file già elaborati.
+    """
+    if os.path.exists(checkpoint_file):
+        logger.info(f"Caricamento file elaborati dal checkpoint: {checkpoint_file}")
+        with open(checkpoint_file, 'r') as f:
+            processed_files = set(f.read().splitlines())
+            logger.info(f"File elaborati caricati: {len(processed_files)} file trovati.")
+            return processed_files
+    else:
+        logger.info(f"Nessun file di checkpoint trovato: {checkpoint_file}. Restituisco un set vuoto.")
+        return set()
+
+
+# Funzione per aggiornare il checkpoint con i nuovi file elaborati
+def update_checkpoint(checkpoint_file, new_files):
+    """
+    Aggiorna il file di checkpoint aggiungendo i nuovi file elaborati.
+
+    Parameters:
+        checkpoint_file (str): Percorso del file di checkpoint.
+        new_files: Insieme dei nuovi file elaborati da aggiungere.
+    """
+    logger.info(f"Aggiornamento del checkpoint con {len(new_files)} nuovi file.")
+    with open(checkpoint_file, 'a') as f:
+        for file in new_files:
+            f.write(file + "\n")
+    logger.info(f"Checkpoint aggiornato con successo: {checkpoint_file}")
+
+
+# Cast delle colonne con gestione degli errori
+def cast_columns_with_defaults(df, schema, default_values):
+    # Fai una copia esplicita del DataFrame
+    df = df.copy()
+
+    for col, dtype in schema.items():
+        if col in df.columns:
+            try:
+                # Prova a castare la colonna al tipo definito nello schema
+                df.loc[:, col] = df[col].astype(dtype)
+                logger.info(f"Colonna '{col}' castata con successo al tipo {dtype}.")
+            except Exception as e:
+                # In caso di errore, sostituisci con il valore predefinito
+                logger.warning(f"Errore nel cast della colonna '{col}' al tipo {dtype}: {e}")
+                default_value = default_values.get(dtype, None)
+                df[col] = default_value
+                logger.info(f"Colonna '{col}' riempita con valore predefinito: {default_value}.")
+        else:
+            # Se la colonna non esiste, aggiungila con il valore predefinito
+            default_value = default_values.get(dtype, None)
+            df[col] = default_value
+            logger.info(f"Colonna '{col}' aggiunta al DataFrame con valore predefinito: {default_value}.")
+    return df
+
+
+def save_to_excel_in_append_mode(file_path, new_data):
+    """
+    Salva i dati nel file Excel in modalità append.
+
+    Parametri:
+    file_path (str): Percorso del file Excel.
+    new_data (DataFrame): Il nuovo DataFrame da aggiungere.
+    """
+    if not os.path.exists(file_path):
+        # Se il file non esiste, crea un nuovo file con i dati
+        new_data.to_excel(file_path, index=False, engine='openpyxl')
+        logger.info(f"File Excel creato: {file_path}")
+    else:
+        # Carica il file Excel esistente
+        workbook = load_workbook(file_path)
+        sheet = workbook.active
+
+        # Ottieni l'indice della prima riga vuota
+        start_row = sheet.max_row + 1
+
+        # Scrivi i nuovi dati sotto quelli esistenti
+        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+            new_data.to_excel(writer, index=False, header=False, startrow=start_row - 1)
+        logger.info(f"Nuovi dati aggiunti al file Excel: {file_path}")
