@@ -257,9 +257,9 @@ def save_to_excel_in_append_mode(file_path, new_data):
             new_data.to_excel(writer, index=False, header=False, startrow=start_row - 1)
         logger.info(f"Nuovi dati aggiunti al file Excel: {file_path}")
 
-def upload_file_to_drive(file_path, folder_id):
+def upload_file_as_google_sheet(file_path, folder_id):
     """
-    Carica un file su Google Drive. Se esiste già, lo sovrascrive.
+    Carica un file su Google Drive come Google Fogli. Se esiste già, lo sovrascrive.
 
     Args:
         file_path (str): Percorso del file da caricare.
@@ -286,12 +286,13 @@ def upload_file_to_drive(file_path, folder_id):
             service.files().delete(fileId=existing_file['id']).execute()
         logger.info(f"File esistente '{file_name}' eliminato.")
 
-    # Carica il nuovo file
+    # Carica il file come Google Fogli
     file_metadata = {
         'name': file_name,
-        'parents': [folder_id]
+        'parents': [folder_id],
+        'mimeType': 'application/vnd.google-apps.spreadsheet'  # Specifica Google Fogli
     }
     media = MediaFileUpload(file_path, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
-    logger.info(f"File '{file_name}' caricato con ID: {uploaded_file.get('id')}")
+    logger.info(f"File '{file_name}' caricato come Google Fogli con ID: {uploaded_file.get('id')}")

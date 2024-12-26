@@ -6,7 +6,7 @@ import re
 import pandas as pd
 
 from salaryExtract.utils import Transformations, FunctionsV2, Constants
-from salaryExtract.utils.FunctionsV2 import save_to_excel_in_append_mode, upload_file_to_drive
+from salaryExtract.utils.FunctionsV2 import save_to_excel_in_append_mode, upload_file_as_google_sheet
 
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -62,11 +62,11 @@ if __name__ == '__main__':
                 # Gestione degli errori per ogni fase dell'elaborazione del file
                 logger.error(f"Errore durante l'elaborazione del file {filename}: {e}")
 
-    # # Salvataggio dell Excel su Google Drive
+    # Salvataggio dell Excel su Google Drive
     # if new_files_processed:
     #     file_path = 'output/relatech_buste_paga_history.xlsx'
     #     folder_id = '15IERLH9b3exM44tlFb34gP5xMUeaYxQk'
-    #     upload_file_to_drive(file_path, folder_id)
+    #     upload_file_as_google_sheet(file_path, folder_id)
     #     logger.info("File caricato su Google Drive.")
     # else:
     #     logger.info("Nessun nuovo file elaborato. Salto il caricamento su Google Drive.")
