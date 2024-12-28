@@ -4,6 +4,7 @@ import time
 
 import pandas as pd
 import pdfplumber
+import psycopg2
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -300,3 +301,67 @@ def upload_file_as_google_sheet(file_path, folder_id):
     uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
     logger.info(f"File '{file_name}' caricato come Google Fogli con ID: {uploaded_file.get('id')}")
+
+
+def create_database_and_table(host, port, user, password, db_name, new_db_name, table_name, table_schema):
+    try:
+        # Connessione al database principale
+        conn = psycopg2.connect(
+            host=host, port=port, user=user, password=password, dbname=db_name
+        )
+        conn.autocommit = True
+        cursor = conn.cursor()
+
+        # Creazione del database se non esiste
+        cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = '{new_db_name}'")
+        if cursor.fetchone() is None:
+            cursor.execute(f"CREATE DATABASE {new_db_name}")
+            logger.info(f"Database '{new_db_name}' creato con successo.")
+        else:
+            logger.info(f"Database '{new_db_name}' già esistente.")
+
+        cursor.close()
+        conn.close()
+
+        # Connessione al nuovo database per creare la tabella
+        conn = psycopg2.connect(
+            host=host, port=port, user=user, password=password, dbname=new_db_name
+        )
+        cursor = conn.cursor()
+
+        # Creazione della tabella se non esiste
+        cursor.execute(table_schema)
+        conn.commit()
+        logger.info(f"Tabella '{table_name}' pronta all'uso.")
+
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        logger.info("Errore:", e)
+
+
+def write_excel_to_table(host, port, user, password, db_name, table_name, file_path, insert_query):
+    try:
+        # Connessione al database
+        conn = psycopg2.connect(
+            host=host, port=port, user=user, password=password, dbname=db_name
+        )
+        cursor = conn.cursor()
+
+        # Leggi l'Excel con Pandas
+        df = pd.read_excel(file_path)
+
+        # Overwrite dei dati nella tabella
+        cursor.execute(f"TRUNCATE TABLE {table_name}")
+        for _, row in df.iterrows():
+            cursor.execute(insert_query, tuple(row))
+
+        conn.commit()
+        logger.info(f"Dati caricati con successo nella tabella '{table_name}'.")
+
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        logger.error("Errore:", e)

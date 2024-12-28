@@ -63,3 +63,40 @@ default_values = {
     float: 0.0,
     int: 0
 }
+
+# Dettagli di connessione al database
+DB_HOST = "pg-34992b48-cdelprete972-6ad9.b.aivencloud.com"
+DB_PORT = "24092"
+DB_USER = "avnadmin"
+DB_PASSWORD = "AVNS__fw4ruPbauocp_OC1--"
+DB_NAME = "defaultdb"  # Database di default per la connessione iniziale
+NEW_DB_NAME = "pdfextract"
+TABLE_NAME = "berebel_history"
+
+# Schema della tabella
+TABLE_SCHEMA = """
+CREATE TABLE IF NOT EXISTS berebel_history (
+    periodo_estratto_conto VARCHAR,
+    date_estratto_conto TIMESTAMP,
+    targa VARCHAR,
+    minimo_mensile FLOAT,
+    costo_al_km FLOAT,
+    km_percorsi INT,
+    km_inclusi INT,
+    km_da_pagare INT,
+    km_residui INT,
+    premio_di_conguaglio FLOAT,
+    totale_pagato FLOAT,
+    note VARCHAR
+);
+"""
+
+# Query di inserimento
+insert_query = """
+INSERT INTO berebel_history (
+    periodo_estratto_conto, date_estratto_conto, targa,
+    minimo_mensile, costo_al_km, km_percorsi, km_inclusi,
+    km_da_pagare, km_residui, premio_di_conguaglio,
+    totale_pagato, note
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""

@@ -3,6 +3,7 @@ import re
 
 from functions.FunctionsV2 import *
 from salaryExtract.utils import Transformations
+from salaryExtract.utils.Constants import *
 
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -64,6 +65,20 @@ if __name__ == '__main__':
         folder_id = '1tsr2ScFi4RAMy3uHE41tN5Odnx0zmS8Y'
         upload_file_as_google_sheet(file_path, folder_id)
         logger.info("File caricato su Google Drive.")
+
+        # Creazione database e tabella
+        logger.info("Inizio creazione database e tabella.")
+        create_database_and_table(
+            DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NEW_DB_NAME, TABLE_NAME, TABLE_SCHEMA
+        )
+        logger.info("Database e tabella pronti.")
+
+        # Scrittura dei dati dall'Excel alla tabella
+        logger.info("Inizio caricamento dati nella tabella.")
+        write_excel_to_table(
+            DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, NEW_DB_NAME, TABLE_NAME, file_path, insert_query
+        )
+        logger.info("Caricamento dati completato.")
     else:
         logger.info("Nessun nuovo file elaborato. Salto il caricamento su Google Drive.")
 

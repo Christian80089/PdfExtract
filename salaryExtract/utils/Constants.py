@@ -98,3 +98,55 @@ default_values = {
     float: 0.0,
     int: 0
 }
+
+# Dettagli di connessione al database
+DB_HOST = "pg-34992b48-cdelprete972-6ad9.b.aivencloud.com"
+DB_PORT = "24092"
+DB_USER = "avnadmin"
+DB_PASSWORD = "AVNS__fw4ruPbauocp_OC1--"
+DB_NAME = "defaultdb"  # Database di default per la connessione iniziale
+NEW_DB_NAME = "pdfextract"
+TABLE_NAME = "relatech_buste_paga_history"
+
+# Schema della tabella relatech_buste_paga_history
+TABLE_SCHEMA = """
+CREATE TABLE IF NOT EXISTS relatech_buste_paga_history (
+    ragione_sociale_azienda VARCHAR,
+    date_periodo_di_retribuzione TIMESTAMP,
+    string_periodo_di_retribuzione VARCHAR,
+    retribuzione_minima_lorda FLOAT,
+    giorni_lavorati INT,
+    ore_lavorate INT,
+    percentuale_maggiorazione_ore_straordinario INT,
+    ore_straordinarie INT,
+    irpef_pagata FLOAT,
+    totale_competenze FLOAT,
+    totale_trattenute FLOAT,
+    arrotondamento FLOAT,
+    netto_del_mese INT,
+    retribuzione_utile_tfr FLOAT,
+    quota_tfr FLOAT,
+    ferie_giorni_residuo_anno_precedente FLOAT,
+    permessi_ore_residuo_anno_precedente FLOAT,
+    ferie_giorni_spettante FLOAT,
+    permessi_ore_spettante FLOAT,
+    totale_ferie_rimanenti FLOAT,
+    totale_permessi_rimanenti FLOAT,
+    note VARCHAR
+);
+"""
+
+# Query di inserimento per relatech_buste_paga_history
+insert_query = """
+INSERT INTO relatech_buste_paga_history (
+    ragione_sociale_azienda, date_periodo_di_retribuzione, string_periodo_di_retribuzione,
+    retribuzione_minima_lorda, giorni_lavorati, ore_lavorate,
+    percentuale_maggiorazione_ore_straordinario, ore_straordinarie,
+    irpef_pagata, totale_competenze, totale_trattenute,
+    arrotondamento, netto_del_mese, retribuzione_utile_tfr,
+    quota_tfr, ferie_giorni_residuo_anno_precedente,
+    permessi_ore_residuo_anno_precedente, ferie_giorni_spettante,
+    permessi_ore_spettante, totale_ferie_rimanenti,
+    totale_permessi_rimanenti, note
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+"""
