@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # Salvataggio dell Excel su Google Drive
     if new_files_processed:
         file_path = 'output/berebel_history.xlsx'
-        folder_id = '15IERLH9b3exM44tlFb34gP5xMUeaYxQk'
+        folder_id = '1tsr2ScFi4RAMy3uHE41tN5Odnx0zmS8Y'
         upload_file_as_google_sheet(file_path, folder_id)
         logger.info("File caricato su Google Drive.")
     else:
