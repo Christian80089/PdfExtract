@@ -59,12 +59,12 @@ if __name__ == '__main__':
                 logger.error(f"Errore durante l'elaborazione del file {filename}: {e}")
 
     # Salvataggio dell Excel su Google Drive
-    # if new_files_processed:
-    #     file_path = 'output/relatech_buste_paga_history.xlsx'
-    #     folder_id = '1tsr2ScFi4RAMy3uHE41tN5Odnx0zmS8Y'
-    #     upload_file_as_google_sheet(file_path, folder_id)
-    #     logger.info("File caricato su Google Drive.")
-    # else:
-    #     logger.info("Nessun nuovo file elaborato. Salto il caricamento su Google Drive.")
+    if new_files_processed:
+        file_path = 'output/relatech_buste_paga_history.xlsx'
+        folder_id = '1tsr2ScFi4RAMy3uHE41tN5Odnx0zmS8Y'
+        upload_file_as_google_sheet(file_path, folder_id)
+        logger.info("File caricato su Google Drive.")
+    else:
+        logger.info("Nessun nuovo file elaborato. Salto il caricamento su Google Drive.")
 
     logger.info("Elaborazione completata.")
