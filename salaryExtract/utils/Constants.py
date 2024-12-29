@@ -3,9 +3,9 @@ import pandas as pd
 info_to_extract = [
     "periodo_di_retribuzione (è una stringa ed è mandatory)",
     "totale_retribuzione_minima_lorda (è un int ed è la somma di Paga Base, Conting, 3Elemen e Sup. ass.) è mandatory",
-    "giorni_lavorati (è un double e non sono mandatory)",
-    "ore_lavorate (è un double e non sono mandatory, ore ordinarie)",
-    "ore_straordinarie (è un double e non sono mandatory)",
+    "giorni_lavorati (è un double e non sono mandatory, nella sezione LAVORATO quarto valore)",
+    "ore_lavorate (è un double e non sono mandatory, ore ordinarie nella sezione LAVORATO quinto valore)",
+    "ore_straordinarie (è un double e non sono mandatory, nella sezione LAVORATO sesto valore)",
     "ritenute_irpef (è un double ed è mandatory)",
     "totale_competenze (è un double ed è mandatory)",
     "totale_trattenute (è un double ed è mandatory)",

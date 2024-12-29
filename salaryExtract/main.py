@@ -39,12 +39,12 @@ if __name__ == '__main__':
                 formatted_text = re.sub(r'\s+', ' ', text).strip()
 
                 # Interazione con Copilot
-                response_copilot = run_copilot(formatted_text)
+                response_copilot = run_copilot(formatted_text, info_to_extract)
                 data = json.loads(response_copilot)
 
                 # Trasformazione dei dati in DataFrame
                 df = pd.DataFrame([data])  # Crea il DataFrame solo con i dati del file corrente
-                transformed_df = Transformations.transform_df(df, Constants.columns_to_select)
+                transformed_df = Transformations.transform_df(df, columns_to_select)
 
                 # Salvataggio dei dati trasformati nel file Excel
                 save_to_excel_in_append_mode(excel_path, transformed_df)

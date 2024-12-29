@@ -15,8 +15,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from beRebelExtract.utils import Constants
-
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
@@ -58,7 +56,7 @@ def extract_pdf_data(pdf_path):
         return ""  # Restituisce una stringa vuota in caso di errore
 
 
-def run_copilot(input_text):
+def run_copilot(input_text, info_to_extract):
     """
     Automazione dell'interazione con il sito Copilot di Microsoft con logica di fallback.
 
@@ -108,7 +106,7 @@ def run_copilot(input_text):
             logger.warning("Pulsante 'Avanti' non trovato. Procedo al passaggio successivo.")
 
         # Invio della query
-        query = f"Estrai le seguenti informazioni, in formato json su una sola riga: {concat_fields(Constants.info_to_extract)} dal seguente testo non formattato: {input_text}"
+        query = f"Estrai le seguenti informazioni, in formato json su una sola riga: {concat_fields(info_to_extract)} dal seguente testo non formattato: {input_text}"
         logger.info("Invio della query a Copilot.")
         try:
             question_box = WebDriverWait(driver, 10).until(
