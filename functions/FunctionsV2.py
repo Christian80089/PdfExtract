@@ -5,6 +5,7 @@ import time
 import pandas as pd
 import pdfplumber
 import psycopg2
+import requests
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -390,3 +391,69 @@ def write_excel_to_table(host, port, user, password, db_name, table_name, file_p
 
     except Exception as e:
         logger.error("Errore:", e)
+
+
+def upload_to_airtable_from_excel(personal_token, base_id, table_name, excel_file_path):
+    """
+    Carica dati in una tabella di Airtable a partire da un file Excel.
+
+    Args:
+        personal_token (str): Il Personal Access Token di Airtable.
+        base_id (str): L'ID della base Airtable.
+        table_name (str): Il nome della tabella in cui caricare i dati.
+        excel_file_path (str): Percorso del file Excel contenente i dati.
+
+    Returns:
+        dict: La risposta dell'API di Airtable o None in caso di errore.
+    """
+    # Validazione del percorso del file Excel
+    if not excel_file_path.endswith(('.xls', '.xlsx')):
+        logger.error("Errore: Il file specificato non è un file Excel valido.")
+        return None
+
+    # Leggi il file Excel e converti in una lista di dizionari
+    try:
+        df = pd.read_excel(excel_file_path)
+
+        if df.empty:
+            logger.error("Errore: Il file Excel è vuoto.")
+            return None
+
+        # Converti tutte le colonne datetime in stringhe ISO 8601
+        for column in df.columns:
+            if pd.api.types.is_datetime64_any_dtype(df[column]):
+                df[column] = df[column].apply(lambda x: x.isoformat() if pd.notnull(x) else None)
+
+        records = df.to_dict(orient="records")
+    except Exception as e:
+        logger.error(f"Errore nella lettura del file Excel: {e}")
+        return None
+
+    # Endpoint API di Airtable per la tabella specificata
+    url = f"https://api.airtable.com/v0/{base_id}/{table_name}"
+
+    # Intestazioni per l'autenticazione e il tipo di contenuto
+    headers = {
+        "Authorization": f"Bearer {personal_token}",
+        "Content-Type": "application/json"
+    }
+
+    # Prepara i dati nel formato richiesto da Airtable
+    payload = {
+        "records": [{"fields": record} for record in records]
+    }
+
+    try:
+        # Esegue la richiesta POST per caricare i dati
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()  # Solleva un'eccezione per eventuali errori HTTP
+
+        # Restituisce la risposta in formato JSON
+        logger.info("Dati caricati con successo su AirTable!")
+        return response.json()
+    except requests.exceptions.RequestException as req_err:
+        logger.error(f"Errore nella richiesta: {req_err}")
+    except Exception as e:
+        logger.error(f"Errore imprevisto: {e}")
+
+    return None

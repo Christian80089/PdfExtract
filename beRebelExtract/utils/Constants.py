@@ -65,12 +65,6 @@ default_values = {
 }
 
 # Dettagli di connessione al database
-DB_HOST = "pg-34992b48-cdelprete972-6ad9.b.aivencloud.com"
-DB_PORT = "24092"
-DB_USER = "avnadmin"
-DB_PASSWORD = "AVNS__fw4ruPbauocp_OC1--"
-DB_NAME = "defaultdb"  # Database di default per la connessione iniziale
-NEW_DB_NAME = "pdfextract"
 TABLE_NAME = "berebel_history"
 
 # Schema della tabella
@@ -100,3 +94,6 @@ INSERT INTO berebel_history (
     totale_pagato, note
 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
+
+# AirTable Constants
+table_name = "tblYr6mF4ZO1oVat1"

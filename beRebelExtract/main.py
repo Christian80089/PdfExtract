@@ -3,6 +3,7 @@ import re
 
 from beRebelExtract.utils import Transformations
 from beRebelExtract.utils.Constants import *
+from constants.CommonConstants import *
 from functions.FunctionsV2 import *
 
 # Configurazione del logger
@@ -59,7 +60,7 @@ if __name__ == '__main__':
                 # Gestione degli errori per ogni fase dell'elaborazione del file
                 logger.error(f"Errore durante l'elaborazione del file {filename}: {e}")
 
-    # Salvataggio dell Excel su Google Drive
+    # Salvataggio dell Excel su AirTable - Google Drive e Aiven PostgreSQL
     if new_files_processed:
         file_path = 'output/berebel_history.xlsx'
         folder_id = '1tsr2ScFi4RAMy3uHE41tN5Odnx0zmS8Y'
@@ -79,6 +80,8 @@ if __name__ == '__main__':
             DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, NEW_DB_NAME, TABLE_NAME, file_path, insert_query
         )
         logger.info("Caricamento dati completato.")
+        # Scrittura su AirTable
+        upload_to_airtable_from_excel(personal_token, base_id, table_name, file_path)
     else:
         logger.info("Nessun nuovo file elaborato. Salto il caricamento su Google Drive.")
 
