@@ -13,14 +13,8 @@ info_to_extract = [
     "netto_del_mese (è un double ed è mandatory)",
     "retribuzione_utile_tfr (è un double ed è mandatory)",
     "quota_tfr (è un double ed è mandatory)",
-    "ferie_giorni_residuo_anno_precedente (è un double e non è mandatory Ferie Residuo AP)",
-    "permessi_ore_residuo_anno_precedente (è un double e non è mandatory, ROL Residuo AP)",
-    "ferie_giorni_spettante (è un double o un int ed è mandatory)",
-    "permessi_ore_spettante (è un double o un int ed è mandatory)",
-    "ferie_giorni_goduto (è un double o un int e non è mandatory)",
-    "permessi_ore_goduto (è un double o un int e non è mandatory)",
-    "totale_ferie_rimanenti (è un double o un int ed è mandatory)",
-    "totale_permessi_rimanenti (è un double o un int ed è mandatory)"
+    "totale_ferie_rimanenti (Saldo Ferie è un double non arrotondare)",
+    "totale_permessi_rimanenti (Saldo R.O.L è un double non arrotondare)"
 ]
 
 mandatory_fields = [
@@ -33,10 +27,6 @@ mandatory_fields = [
     "netto_del_mese",
     "retribuzione_utile_tfr",
     "quota_tfr",
-    "ferie_giorni_residuo_anno_precedente",
-    "permessi_ore_residuo_anno_precedente",
-    "ferie_giorni_spettante",
-    "permessi_ore_spettante",
     "totale_ferie_rimanenti",
     "totale_permessi_rimanenti"
 ]
@@ -57,13 +47,10 @@ columns_to_select = [
     "netto_del_mese",
     "retribuzione_utile_tfr",
     "quota_tfr",
-    "ferie_giorni_residuo_anno_precedente",
-    "permessi_ore_residuo_anno_precedente",
-    "ferie_giorni_spettante",
-    "permessi_ore_spettante",
     "totale_ferie_rimanenti",
     "totale_permessi_rimanenti",
-    "note"
+    "note",
+    "record_key"
 ]
 
 schema = {
@@ -82,13 +69,10 @@ schema = {
     "netto_del_mese": int,  # Netto del mese (int)
     "retribuzione_utile_tfr": float,  # Retribuzione utile per TFR (float)
     "quota_tfr": float,  # Quota TFR (float)
-    "ferie_giorni_residuo_anno_precedente": float,  # Ferie residue anno precedente (float)
-    "permessi_ore_residuo_anno_precedente": float,  # Permessi ore residue anno precedente (float)
-    "ferie_giorni_spettante": float,  # Ferie spettanti (float)
-    "permessi_ore_spettante": float,  # Permessi spettanti (float)
     "totale_ferie_rimanenti": float,  # Totale ferie rimanenti (float)
     "totale_permessi_rimanenti": float,  # Totale permessi rimanenti (float)
-    "note": str  # Note (stringa)
+    "note": str,  # Note (stringa)
+    "record_key": str # Concatenazione di Periodo di retribuzione e netto del mese
 }
 
 # Valori predefiniti per i tipi
@@ -120,13 +104,10 @@ CREATE TABLE IF NOT EXISTS relatech_buste_paga_history (
     netto_del_mese INT,
     retribuzione_utile_tfr FLOAT,
     quota_tfr FLOAT,
-    ferie_giorni_residuo_anno_precedente FLOAT,
-    permessi_ore_residuo_anno_precedente FLOAT,
-    ferie_giorni_spettante FLOAT,
-    permessi_ore_spettante FLOAT,
     totale_ferie_rimanenti FLOAT,
     totale_permessi_rimanenti FLOAT,
-    note VARCHAR
+    note VARCHAR,
+    record_key VARCHAR
 );
 """
 
@@ -138,9 +119,12 @@ INSERT INTO relatech_buste_paga_history (
     percentuale_maggiorazione_ore_straordinario, ore_straordinarie,
     irpef_pagata, totale_competenze, totale_trattenute,
     arrotondamento, netto_del_mese, retribuzione_utile_tfr,
-    quota_tfr, ferie_giorni_residuo_anno_precedente,
-    permessi_ore_residuo_anno_precedente, ferie_giorni_spettante,
-    permessi_ore_spettante, totale_ferie_rimanenti,
-    totale_permessi_rimanenti, note
-) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    quota_tfr, totale_ferie_rimanenti,
+    totale_permessi_rimanenti, note, record_key
+) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
+
+# AirTable Constants
+table_name = "tbl3pSxuXeWGe1PeV"
+
+key_field = "record_key"

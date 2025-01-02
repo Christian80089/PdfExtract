@@ -16,11 +16,6 @@ if __name__ == '__main__':
     excel_path = "output/berebel_history.xlsx"
     output_folder = "output"
 
-    # Crea la directory di output se non esiste
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-        logger.info(f"Directory '{output_folder}' creata.")
-
     new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
 
     try:
@@ -47,8 +42,8 @@ if __name__ == '__main__':
                 df = pd.DataFrame([data])  # Crea il DataFrame solo con i dati del file corrente
                 transformed_df = Transformations.transform_df(df, columns_to_select)
 
-                # Salvataggio dei dati trasformati nel file Excel
-                save_to_excel_in_append_mode(excel_path, transformed_df)
+                # Scrittura su AirTable
+                upload_to_airtable_from_dataframe(personal_token, base_id, table_name, transformed_df, key_field)
 
                 # Aggiorna il checkpoint
                 update_checkpoint(checkpoint_file, [filename])
@@ -59,30 +54,5 @@ if __name__ == '__main__':
             except Exception as e:
                 # Gestione degli errori per ogni fase dell'elaborazione del file
                 logger.error(f"Errore durante l'elaborazione del file {filename}: {e}")
-
-    # Salvataggio dell Excel su AirTable - Google Drive e Aiven PostgreSQL
-    if new_files_processed:
-        file_path = 'output/berebel_history.xlsx'
-        folder_id = '1tsr2ScFi4RAMy3uHE41tN5Odnx0zmS8Y'
-        upload_file_as_google_sheet(file_path, folder_id)
-        logger.info("File caricato su Google Drive.")
-
-        # Creazione database e tabella
-        logger.info("Inizio creazione database e tabella.")
-        create_database_and_table(
-            DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NEW_DB_NAME, TABLE_NAME, TABLE_SCHEMA
-        )
-        logger.info("Database e tabella pronti.")
-
-        # Scrittura dei dati dall'Excel alla tabella
-        logger.info("Inizio caricamento dati nella tabella.")
-        write_excel_to_table(
-            DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, NEW_DB_NAME, TABLE_NAME, file_path, insert_query
-        )
-        logger.info("Caricamento dati completato.")
-        # Scrittura su AirTable
-        upload_to_airtable_from_excel(personal_token, base_id, table_name, file_path)
-    else:
-        logger.info("Nessun nuovo file elaborato. Salto il caricamento su Google Drive.")
 
     logger.info("Elaborazione completata.")

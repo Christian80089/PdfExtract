@@ -457,3 +457,80 @@ def upload_to_airtable_from_excel(personal_token, base_id, table_name, excel_fil
         logger.error(f"Errore imprevisto: {e}")
 
     return None
+
+
+def upload_to_airtable_from_dataframe(personal_token, base_id, table_name, dataframe, key_field):
+    """
+    Carica dati in una tabella di Airtable a partire da un DataFrame Pandas.
+    Controlla se un record con una chiave specifica esiste già prima di aggiungerlo.
+
+    Args:
+        personal_token (str): Il Personal Access Token di Airtable.
+        base_id (str): L'ID della base Airtable.
+        table_name (str): Il nome della tabella in cui caricare i dati.
+        dataframe (pd.DataFrame): DataFrame contenente i dati da caricare.
+        key_field (str): Nome del campo chiave da usare per verificare l'esistenza dei record.
+
+    Returns:
+        list: Lista delle risposte per ogni operazione effettuata (aggiunta o verifica).
+    """
+    # Verifica che il campo chiave esista nel DataFrame
+    if key_field not in dataframe.columns:
+        logger.error(f"Errore: Il campo chiave '{key_field}' non esiste nel DataFrame.")
+        return None
+
+    # Converti tutte le colonne datetime in stringhe ISO 8601
+    for column in dataframe.columns:
+        if pd.api.types.is_datetime64_any_dtype(dataframe[column]):
+            dataframe[column] = dataframe[column].apply(lambda x: x.isoformat() if pd.notnull(x) else None)
+
+    # Endpoint API di Airtable per la tabella specificata
+    url = f"https://api.airtable.com/v0/{base_id}/{table_name}"
+    headers = {
+        "Authorization": f"Bearer {personal_token}",
+        "Content-Type": "application/json"
+    }
+
+    # Ottieni tutti i record esistenti su Airtable
+    existing_records = {}
+    try:
+        offset = None
+        while True:
+            response = requests.get(url, headers=headers, params={"offset": offset})
+            response.raise_for_status()
+            data = response.json()
+            for record in data.get("records", []):
+                existing_records[record["fields"].get(key_field)] = record["id"]
+            offset = data.get("offset")
+            if not offset:
+                break
+    except requests.exceptions.RequestException as req_err:
+        logger.error(f"Errore nella richiesta per ottenere i record esistenti: {req_err}")
+        return None
+
+    # Lista delle risposte delle operazioni
+    responses = []
+
+    # Itera sui record del DataFrame
+    for _, row in dataframe.iterrows():
+        key_value = row[key_field]
+        if key_value in existing_records:
+            logger.info(f"Record con chiave '{key_value}' già esistente. Nessuna azione intrapresa.")
+            continue
+
+        # Prepara il record da aggiungere
+        payload = {
+            "records": [{"fields": row.to_dict()}]
+        }
+
+        # Esegui la richiesta POST per aggiungere il record
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            responses.append(response.json())
+            logger.info(f"Record con chiave '{key_value}' aggiunto con successo.")
+        except requests.exceptions.RequestException as req_err:
+            logger.error(f"Errore nella richiesta per aggiungere il record '{key_value}': {req_err}")
+            responses.append(None)
+
+    return responses

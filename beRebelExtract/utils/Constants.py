@@ -97,3 +97,5 @@ INSERT INTO berebel_history (
 
 # AirTable Constants
 table_name = "tblYr6mF4ZO1oVat1"
+
+key_field = "periodo_estratto_conto"

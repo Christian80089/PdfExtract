@@ -27,8 +27,9 @@ def transform_df(df, columns_to_select):
     df["percentuale_maggiorazione_ore_straordinario"] = 15
     df["irpef_pagata"] = df["ritenute_irpef"]
     df["note"] = "Script completato con successo"
+    df["record_key"] = df["string_periodo_di_retribuzione"].astype(str) + "|" + df["netto_del_mese"].astype(int).astype(str)
 
-    logger.info("Colonne base aggiunte ('ragione_sociale_azienda', 'date_periodo_di_retribuzione', etc.).")
+    logger.info("Colonne aggiunte.")
 
     # Verifica i campi obbligatori e aggiorna la colonna 'note' per i campi mancanti
     for field in Constants.mandatory_fields:
