@@ -1,0 +1,7 @@
+DATA CONTABILE;DATA VALUTA;USCITE;ENTRATE;CAUSALE;DESCRIZIONE OPERAZIONE
+01/10/2023;;;0,00;;Saldo iniziale
+28/12/2023;28/12/2023;;+50,00;Accredito Bonifico;Bonifico N. 2336139932738932483984139841IT BIC Ordinante DEUTITMMXXX Data Ordine  Codifica Ordinante IT90R0310439841000000823503 Anagrafica Ordinante DEL PRETE CHRISTIAN Note: GIROCONTO
+29/12/2023;29/12/2023;-10,00;;Giroconto;A  IT76J0347501605000334565447 Giroconto
+29/12/2023;29/12/2023;-1,00;;Ricarica Carta Prepagata;"Ricarica carta prepagata MasterCard ING "
+29/12/2023;29/12/2023;-1,00;;Commissione Ricarica Carta Prepag.;"Commissione per ricarica carta prepagata MasterCard ING "
+31/12/2023;;;+38,00;;Saldo finale

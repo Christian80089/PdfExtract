@@ -1,6 +1,8 @@
 import logging
 import os
 import time
+from datetime import datetime
+import re
 
 import numpy as np
 import pandas as pd
@@ -569,3 +571,35 @@ def upload_to_airtable_from_dataframe(personal_token, base_id, table_name, dataf
             responses.append(None)
 
     return responses
+
+
+def extract_date_from_filename(filename):
+    """
+    Estrae una data dal nome del file in formato 'gennaio2025' e la converte in '01-01-2025'.
+
+    Parametri:
+    - filename (str): Nome del file.
+
+    Ritorna:
+    - str: Data in formato 'dd-mm-yyyy'.
+    """
+    try:
+        # Mappa dei mesi in italiano
+        mesi = {
+            "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4,
+            "maggio": 5, "giugno": 6, "luglio": 7, "agosto": 8,
+            "settembre": 9, "ottobre": 10, "novembre": 11, "dicembre": 12
+        }
+
+        # Estrarre il nome del mese e l'anno
+        for mese, numero in mesi.items():
+            if mese in filename.lower():
+                anno = re.search(r'\d{4}', filename).group()
+                data = datetime(int(anno), numero, 1)  # Primo giorno del mese
+                return data.strftime("%d-%m-%Y")
+
+        logger.warning(f"Impossibile estrarre una data valida dal file: {filename}")
+        return None
+    except Exception as e:
+        logger.error(f"Errore durante l'estrazione della data dal file {filename}: {e}")
+        return None

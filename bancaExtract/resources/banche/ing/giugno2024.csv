@@ -1,0 +1,30 @@
+DATA CONTABILE;DATA VALUTA;USCITE;ENTRATE;CAUSALE;DESCRIZIONE OPERAZIONE
+01/04/2024;;;+2.371,38;;Saldo iniziale
+02/04/2024;02/04/2024;-500,48;;Pagamenti Diversi;72028010512 11P91 ING BANK N.V. MILAN BRANCH - MUTUO ARANCIO CHRISTIAN DEL PRETE MUTUO 70500509750 RATA N. 3 CHRISTIAN DEL PRETE COD.CLIENTE: 910013849502
+11/04/2024;11/04/2024;;+2.050,00;Accredito Stipendio/Pensione;Bonifico N. 0306927107115201482041420414IT BIC Ordinante BCITITMMXXX Data Ordine  Codifica Ordinante IT13R0306920414100000000639 Anagrafica Ordinante RELATECH S P A Note: ACCREDITO COMPETENZE MESE DI MARZO 2024
+02/05/2024;02/05/2024;-500,52;;Pagamenti Diversi;72046573300 11P91 ING BANK N.V. MILAN BRANCH - MUTUO ARANCIO CHRISTIAN DEL PRETE MUTUO 70500509750 RATA N. 4 CHRISTIAN DEL PRETE COD.CLIENTE: 910013849502
+13/05/2024;13/05/2024;;+2.463,00;Accredito Stipendio/Pensione;Bonifico N. 0306925964081101482041420414IT BIC Ordinante BCITITMMXXX Data Ordine  Codifica Ordinante IT13R0306920414100000000639 Anagrafica Ordinante RELATECH S P A Note: ACCREDITO COMPETENZE MESE DI APRILE 2024
+15/05/2024;13/05/2024;-700,00;;Pagamento Carta;Operazione Mastercard del 13/05/2024 alle ore 15:26 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=700 / Importo in Euro=700 presso SWEET HOUSE SRL PRESSO
+26/05/2024;24/05/2024;-9,34;;Pagamento Carta;Operazione Mastercard del 24/05/2024 alle ore 18:52 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=9.34 / Importo in Euro=9.34 presso AMAZON* 404-5967268-48
+28/05/2024;25/05/2024;-14,36;;Pagamento Carta;Operazione Mastercard del 25/05/2024 alle ore 10:05 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=14.36 / Importo in Euro=14.36 presso ECOFUEL - Transazione C-less
+29/05/2024;27/05/2024;-18,00;;Pagamento Carta;Operazione Mastercard del 27/05/2024 alle ore 12:42 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=18 / Importo in Euro=18 presso GALLO PETROLI - Transazione C-less
+01/06/2024;30/05/2024;-41,97;;Pagamento Carta;Operazione Mastercard del 30/05/2024 alle ore 16:55 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=41.97 / Importo in Euro=41.97 presso AMAZON* 404-9337157-52
+03/06/2024;03/06/2024;-500,54;;Pagamenti Diversi;72064898605 11P91 ING BANK N.V. MILAN BRANCH - MUTUO ARANCIO CHRISTIAN DEL PRETE MUTUO 70500509750 RATA N. 5 CHRISTIAN DEL PRETE COD.CLIENTE: 910013849502
+10/06/2024;08/06/2024;-24,99;;Pagamento Carta;Operazione Mastercard del 08/06/2024 alle ore 15:23 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=24.99 / Importo in Euro=24.99 presso AMAZON* 404-1673561-88
+10/06/2024;08/06/2024;-10,58;;Pagamento Carta;Operazione Mastercard del 08/06/2024 alle ore 18:43 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=10.58 / Importo in Euro=10.58 presso CONAD CENT.COMM.LA MAS - Transazione C-less
+11/06/2024;11/06/2024;;+2.586,00;Accredito Stipendio/Pensione;Bonifico N. 0306927150012904482041420414IT BIC Ordinante BCITITMMXXX Data Ordine  Codifica Ordinante IT13R0306920414100000000639 Anagrafica Ordinante RELATECH S P A Note: ACCREDITO COMPETENZE MESE DI MAGGIO 2024
+11/06/2024;08/06/2024;-16,76;;Pagamento Carta;Operazione Mastercard del 08/06/2024 alle ore 11:57 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=16.76 / Importo in Euro=16.76 presso B E A SAS DI FRANZESE - Transazione C-less
+11/06/2024;09/06/2024;-5,11;;Pagamento Carta;Operazione Mastercard del 09/06/2024 alle ore 09:40 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=5.11 / Importo in Euro=5.11 presso AMAZON* 404-8644274-03
+18/06/2024;14/06/2024;-102,46;;Pagamento Carta;Operazione Mastercard del 14/06/2024 alle ore 00:00 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=102.46 / Importo in Euro=102.46 presso PAYPAL *ENELENERGIA
+18/06/2024;16/06/2024;-14,76;;Pagamento Carta;Operazione Mastercard del 16/06/2024 alle ore 14:49 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=14.76 / Importo in Euro=14.76 presso TAMOIL 7154 - Transazione C-less
+18/06/2024;16/06/2024;-11,89;;Pagamento Carta;Operazione Mastercard del 16/06/2024 alle ore 18:07 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=11.89 / Importo in Euro=11.89 presso AMAZON* 404-8060704-06
+20/06/2024;17/06/2024;-210,56;;Pagamento Carta;Operazione Mastercard del 17/06/2024 alle ore 00:00 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=210.56 / Importo in Euro=210.56 presso PAYPAL *PAGA IN 3 RATE
+21/06/2024;19/06/2024;-212,41;;Pagamento Carta;Operazione Mastercard del 19/06/2024 alle ore 16:39 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=212.41 / Importo in Euro=212.41 presso AMAZON* 404-9191480-99
+24/06/2024;24/06/2024;-595,00;;Bonifico In Uscita;BONIFICO DA VOI DISPOSTO NOP 14499233406 A FAVORE DI Bruno Del Prete C. BENEF. IT66S0200839843000011035811 NOTE: Regalo
+24/06/2024;22/06/2024;-29,00;;Pagamento Carta;Operazione Mastercard del 22/06/2024 alle ore 15:11 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=29 / Importo in Euro=29 presso FARM. GALENO CASORIA - Transazione C-less
+25/06/2024;23/06/2024;-14,71;;Pagamento Carta;Operazione Mastercard del 23/06/2024 alle ore 14:35 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=14.71 / Importo in Euro=14.71 presso TAMOIL 7154 - Transazione C-less
+27/06/2024;25/06/2024;-212,41;;Pagamento Carta;Operazione Mastercard del 25/06/2024 alle ore 18:57 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=212.41 / Importo in Euro=212.41 presso AMAZON* 404-0358012-74
+28/06/2024;28/06/2024;-140,56;;Addebito Diretto;Addebito SDD CORE Scad. 28/06/2024 Imp. 140.56 Creditor id. IT710020000006655971007 ENEL ENERGIA S P A Id Mandato 2C1071113413454T Debitore CHRISTIAN DEL PRETE VIA CARDIT Rif. 975005045471288 B0009924060824061630800AC411020F90000010353
+29/06/2024;27/06/2024;-18,09;;Pagamento Carta;Operazione Mastercard del 27/06/2024 alle ore 18:21 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=18.09 / Importo in Euro=18.09 presso START SRL - Transazione C-less
+29/06/2024;27/06/2024;-8,70;;Pagamento Carta;Operazione Mastercard del 27/06/2024 alle ore 21:03 con Carta xxxxxxxxxxxx2042 Div=EUR Importo in divisa=8.7 / Importo in Euro=8.7 presso ECOFUEL - Transazione C-less
+30/06/2024;;;+5.557,18;;Saldo finale
