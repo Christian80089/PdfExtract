@@ -1,4 +1,4 @@
-from bancaExtract.utils import Transformations
+from bancaExtract.utils import TransformationsIng
 from bancaExtract.utils.Constants import *
 from constants.CommonConstants import *
 from functions.FunctionsV2 import *
@@ -35,7 +35,7 @@ if __name__ == '__main__':
                     if extracted_date:
                         df["data_estratto_conto"] = extracted_date  # Aggiungi la colonna con la data
                         df["data_estratto_conto"] = pd.to_datetime(df["data_estratto_conto"], format='%d-%m-%Y')
-                    transformed_df = Transformations.transform_df(df, columns_to_select)
+                    transformed_df = TransformationsIng.transform_df(df, columns_to_select)
 
                     # Scrittura su AirTable
                     upload_to_airtable_from_dataframe(personal_token, base_id, table_name, transformed_df, key_field)
