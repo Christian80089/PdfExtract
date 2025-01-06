@@ -1,0 +1,24 @@
+﻿Data contabile;Valuta;Dare;Avere;Divisa;Operazione;Dettagli;Categoria;Tag
+31/12/2024;31/12/2024;-2,39;;EUR;COMPETENZE;SPESE;Commissioni;
+11/12/2024;11/12/2024;;11,37;EUR;BONIFICO VS/FAVORE;"Ordinante: Christian Del Prete
+Data regolamento: 11/12/24 Data accredito: 11/12/24
+Iban ordinante:: IT74 D034 7501 605C C001 2686 433
+Banca ordinante: 03475/01605-INGBITD1XXX
+ID Transazione: 15424746508
+Causale: Giroconto
+ID Operazione: NOTPROVIDED";Accrediti/Bonifici in ingresso;
+04/12/2024;29/11/2024;-15,49;;EUR;PAGAMENTO VISA/MAESTRO AREA SEPA;"DEL 29/11/24 ALL'ESTERO A 35314369001
+C/O PAYPAL *GLOVO
+Valuta EUR Paese Spagna
+VISA CONS DEB N.RO 416377******7998";Spese senza categoria;
+23/10/2024;19/10/2024;-1695,00;;EUR;PAGAMENTO VISA/MAESTRO AREA SEPA;"DEL 19/10/24 IN ITALIA A CARINARO
+C/O MONDO CONVENIENZA CARINA
+Valuta EUR Paese Italia
+VISA CONS DEB N.RO 416377******7998";Spese senza categoria;
+09/10/2024;09/10/2024;;1700,00;EUR;BONIFICO VS/FAVORE;"Ordinante: Christian Del Prete
+Data regolamento: 09/10/24 Data accredito: 09/10/24
+Iban ordinante:: IT74 D034 7501 605C C001 2686 433
+Banca ordinante: 03475/01605-INGBITD1XXX
+ID Transazione: 15068496111
+Causale: Giroconto
+ID Operazione: NOTPROVIDED";Accrediti/Bonifici in ingresso;

@@ -92,6 +92,7 @@ INSERT INTO movimenti_banca_history (
 """
 
 # AirTable Constants
-table_name = "tblRwAoWEmI3RrxPh"
+ing_table_name = "tblRwAoWEmI3RrxPh"
+deutsche_table_name = "tblB7XCUmNxnF38AT"
 
 key_field = "record_key"

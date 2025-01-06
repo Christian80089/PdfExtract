@@ -1,4 +1,4 @@
-from bancaExtract.utils import TransformationsIng
+from bancaExtract.utils import TransformationsIng, TransformationsDeutsche
 from bancaExtract.utils.Constants import *
 from constants.CommonConstants import *
 from functions.FunctionsV2 import *
@@ -31,14 +31,26 @@ if __name__ == '__main__':
                     extracted_date = extract_date_from_filename(filename)
 
                     # Trasformazione dei dati in DataFrame
-                    df = pd.read_csv(file_path, delimiter=';', header=0)  # Crea il DataFrame solo con i dati del file corrente
+                    df = pd.read_csv(file_path, delimiter=';',
+                                     header=0)  # Crea il DataFrame solo con i dati del file corrente
                     if extracted_date:
                         df["data_estratto_conto"] = extracted_date  # Aggiungi la colonna con la data
                         df["data_estratto_conto"] = pd.to_datetime(df["data_estratto_conto"], format='%d-%m-%Y')
-                    transformed_df = TransformationsIng.transform_df(df, columns_to_select)
 
-                    # Scrittura su AirTable
-                    upload_to_airtable_from_dataframe(personal_token, base_id, table_name, transformed_df, key_field)
+                    # Determina la trasformazione da applicare in base alla cartella o al nome del file
+                    if "deutsche" in root.lower() or "deutsche" in filename.lower():
+                        transformed_df = TransformationsDeutsche.transform_df(df, columns_to_select)
+                        # Scrittura su AirTable
+                        # upload_to_airtable_from_dataframe(personal_token, base_id, deutsche_table_name, transformed_df, key_field)
+                        transformed_df.to_csv(f'resources/output/{filename.lower()}', index=False, sep=';')
+                    elif "ing" in root.lower() or "ing" in filename.lower():
+                        transformed_df = TransformationsIng.transform_df(df, columns_to_select)
+                        # Scrittura su AirTable
+                        upload_to_airtable_from_dataframe(personal_token, base_id, ing_table_name, transformed_df, key_field)
+                    else:
+                        logger.warning(
+                            f"Impossibile determinare il tipo di trasformazione per il file {filename}. File saltato.")
+                        continue
 
                     # Aggiorna il checkpoint
                     update_checkpoint(checkpoint_file, [filename])

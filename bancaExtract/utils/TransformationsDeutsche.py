@@ -22,16 +22,15 @@ def transform_df(df, columns_to_select):
     logger.info("Inizio della trasformazione del DataFrame.")
 
     # Aggiungi colonne al DataFrame
-    df["banca"] = "Ing Arancio"
-    df["numero_conto_corrente"] = "2686433"
-    df["codice_iban"] = "IT74D0347501605CC0012686433"
-    df["descrizione"] = df["DESCRIZIONE OPERAZIONE"]
-    df["uscite"] = df["USCITE"].str.replace("-", "", regex=False).str.replace(".", "", regex=False).str.replace(",", ".", regex=False).astype(float) * -1
-    df["entrate"] = df["ENTRATE"].str.replace("+", "", regex=False).str.replace(".", "", regex=False).str.replace(",", ".", regex=False).astype(float)
-
-    df["causale"] = df["CAUSALE"]
+    df["banca"] = "Deutsche Bank"
+    df["numero_conto_corrente"] = "823503"
+    df["codice_iban"] = "IT90R0310439841000000823503"
+    df["descrizione"] = df["Categoria"]
+    df["uscite"] = df["Dare"].astype(str).str.replace("-", "", regex=False).str.replace(".", "", regex=False).str.replace(",", ".", regex=False).astype(float) * -1
+    df["entrate"] = df["Avere"].astype(str).str.replace("+", "", regex=False).str.replace(".", "", regex=False).str.replace(",", ".", regex=False).astype(float)
+    df["causale"] = df["Operazione"]
     df["note"] = "File Estratto Conto Trimestrale - Script completato con successo"
-    df["data_operazione"] = pd.to_datetime(df["DATA VALUTA"], format='%d/%m/%Y')
+    df["data_operazione"] = pd.to_datetime(df["Valuta"], format='%d/%m/%Y')
     df["concatenated_key"] = (
             df["data_operazione"].astype(str) + "|" +
             df["uscite"].astype(str) + "|" +
