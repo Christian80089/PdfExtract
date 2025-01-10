@@ -1,0 +1,5 @@
+record_key;banca;numero_conto_corrente;data_estratto_conto;codice_iban;data_operazione;uscite;entrate;descrizione;causale;note
+5e2b7218f23fdaccae4287ecb799591ecc090d118826b80fb463482e8a2cb7a7;Deutsche Bank;823503;2024-09-01;IT90R0310439841000000823503;2024-09-30;-2.39;;Commissioni;COMPETENZE;File Estratto Conto Trimestrale - Script completato con successo
+5e09d725454f775bbaf374297ef4f83109d268214511129092a0e4193ac8d5a2;Deutsche Bank;823503;2024-09-01;IT90R0310439841000000823503;2024-09-11;-8.8;;Prodotti e servizi per la casa;PAGAMENTO VISA/MAESTRO AREA SEPA;File Estratto Conto Trimestrale - Script completato con successo
+8ff91ca62324e3795f915fa86c0db66f6f8b3aec7c554871ee34ba92d20f034d;Deutsche Bank;823503;2024-09-01;IT90R0310439841000000823503;2024-07-27;-14.95;;Carburante;PAGAMENTO VISA/MAESTRO AREA SEPA;File Estratto Conto Trimestrale - Script completato con successo
+e9a0c13481b66ff155bee5001c54115a59e3b521350187f1677246fd54a98cf9;Deutsche Bank;823503;2024-09-01;IT90R0310439841000000823503;2024-07-01;-29.49;;Spese senza categoria;PAGAMENTO VISA/MAESTRO AREA SEPA;File Estratto Conto Trimestrale - Script completato con successo

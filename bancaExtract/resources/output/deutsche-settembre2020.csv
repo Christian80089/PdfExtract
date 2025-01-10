@@ -1,0 +1,4 @@
+record_key;banca;numero_conto_corrente;data_estratto_conto;codice_iban;data_operazione;uscite;entrate;descrizione;causale;note
+8432b314b5b7d3a11219de54106e15fbf8d4abc50cee5b7be9fc426564caf7ff;Deutsche Bank;823503;2020-09-01;IT90R0310439841000000823503;2020-08-24;-316.0;;nan;Operazione VISA/MAES;File Estratto Conto Trimestrale - Script completato con successo
+e92a52ee36502f1b174ee8bb4a747ada69bee08ce444813ec9640edfa6ed332c;Deutsche Bank;823503;2020-09-01;IT90R0310439841000000823503;2020-07-14;-17.0;;nan;Operazione VISA/MAES;File Estratto Conto Trimestrale - Script completato con successo
+8c937a3ff3e7d2f51873bde7a1d824ecc68762b71bd334f3a194a8f28374914c;Deutsche Bank;823503;2020-09-01;IT90R0310439841000000823503;2020-07-03;;1444.5;nan;EMOLUMENTI;File Estratto Conto Trimestrale - Script completato con successo

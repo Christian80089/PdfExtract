@@ -20,3 +20,6 @@ deutsche-settembre2021.csv
 deutsche-settembre2022.csv
 deutsche-settembre2023.csv
 deutsche-settembre2024.csv
+deutsche-giugno2020.csv
+deutsche-settembre2020.csv
+deutscheestrattototale-dicembre2024.csv

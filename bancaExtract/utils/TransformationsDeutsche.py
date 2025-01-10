@@ -39,7 +39,7 @@ def transform_df(df, columns_to_select):
             df["causale"].astype(str)
     )
     df["record_key"] = df["concatenated_key"].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
-    df_filtered = df[~df["descrizione"].str.contains("Saldo iniziale|Saldo finale", case=True, na=True)]
+    df_filtered = df[~df["descrizione"].astype(str).str.contains("Saldo iniziale|Saldo finale", case=True, na=True)]
 
     logger.info("Colonne base aggiunte")
 

@@ -1,0 +1,2 @@
+record_key;banca;numero_conto_corrente;data_estratto_conto;codice_iban;data_operazione;uscite;entrate;descrizione;causale;note
+64a45638b4050bf5162186af9f8766dc6b31815abfb564c70fa61d2cf54d43f7;Deutsche Bank;823503;2020-06-01;IT90R0310439841000000823503;2020-06-29;;250.0;nan;EMOLUMENTI;File Estratto Conto Trimestrale - Script completato con successo
