@@ -1,3 +1,4 @@
+import hashlib
 import locale
 import logging
 
@@ -27,7 +28,11 @@ def transform_df(df, columns_to_select):
     df["percentuale_maggiorazione_ore_straordinario"] = 15
     df["irpef_pagata"] = df["ritenute_irpef"]
     df["note"] = "Script completato con successo"
-    df["record_key"] = df["string_periodo_di_retribuzione"].astype(str) + "|" + df["netto_del_mese"].astype(int).astype(str)
+    df["concatenated_key"] = (
+            df["date_periodo_di_retribuzione"].astype(str) + "|" +
+            df["netto_del_mese"].astype(int).astype(str)
+    )
+    df["record_key"] = df["concatenated_key"].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
 
     logger.info("Colonne aggiunte.")
 

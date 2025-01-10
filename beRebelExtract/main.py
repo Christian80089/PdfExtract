@@ -1,5 +1,4 @@
 import json
-import re
 
 from beRebelExtract.utils import Transformations
 from beRebelExtract.utils.Constants import *
@@ -17,6 +16,12 @@ if __name__ == '__main__':
     output_folder = "output"
 
     new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
+
+    initialLoadOnDB = False
+    if initialLoadOnDB:
+        csv_path = "resources/output/berebel_history.csv"
+        create_database_and_table(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NEW_DB_NAME, TABLE_NAME, TABLE_SCHEMA)
+        write_csv_to_table(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, NEW_DB_NAME, TABLE_NAME, csv_path, insert_query)
 
     try:
         processed_files = load_processed_files(checkpoint_file)  # Carica i file già elaborati
@@ -44,6 +49,9 @@ if __name__ == '__main__':
 
                 # Scrittura su AirTable
                 upload_to_airtable_from_dataframe(personal_token, base_id, table_name, transformed_df, key_field)
+
+                # Scrittura su PostgresSQL
+                write_df_to_table(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, NEW_DB_NAME, TABLE_NAME, transformed_df, insert_query)
 
                 # Aggiorna il checkpoint
                 update_checkpoint(checkpoint_file, [filename])

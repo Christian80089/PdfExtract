@@ -401,7 +401,7 @@ def create_database_and_table(host, port, user, password, db_name, new_db_name, 
         logger.info("Errore:", e)
 
 
-def write_excel_to_table(host, port, user, password, db_name, table_name, file_path, insert_query):
+def write_csv_to_table(host, port, user, password, db_name, table_name, csv_path, insert_query, delimiter=","):
     try:
         # Connessione al database
         conn = psycopg2.connect(
@@ -410,10 +410,37 @@ def write_excel_to_table(host, port, user, password, db_name, table_name, file_p
         cursor = conn.cursor()
 
         # Leggi l'Excel con Pandas
-        df = pd.read_excel(file_path)
+        df = pd.read_csv(csv_path, sep=delimiter)
+        df = df.applymap(lambda x: str(x).replace(',', '.') if isinstance(x, str) else x)
+        df = df.apply(pd.to_numeric, errors='ignore')  # Converte le colonne numeriche, ignora quelle non numeriche
 
         # Overwrite dei dati nella tabella
         cursor.execute(f"TRUNCATE TABLE {table_name}")
+        for _, row in df.iterrows():
+            cursor.execute(insert_query, tuple(row))
+
+        conn.commit()
+        logger.info(f"Dati caricati con successo nella tabella '{table_name}'.")
+
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        logger.error("Errore:", e)
+
+def write_df_to_table(host, port, user, password, db_name, table_name, df, insert_query):
+    try:
+        # Connessione al database
+        conn = psycopg2.connect(
+            host=host, port=port, user=user, password=password, dbname=db_name
+        )
+        cursor = conn.cursor()
+
+        # Usa df
+        df = df.applymap(lambda x: str(x).replace(',', '.') if isinstance(x, str) else x)
+        df = df.apply(pd.to_numeric, errors='ignore')  # Converte le colonne numeriche, ignora quelle non numeriche
+
+        # Overwrite dei dati nella tabella
         for _, row in df.iterrows():
             cursor.execute(insert_query, tuple(row))
 

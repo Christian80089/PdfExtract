@@ -91,10 +91,10 @@ TABLE_NAME = "bollette_luce_history"
 # Schema della tabella
 TABLE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS bollette_luce_history (
-    fornitore VARCHAR,
     numero_fattura VARCHAR PRIMARY KEY,
-    data_fattura TIMESTAMP,
+    fornitore VARCHAR,
     periodo_fornitura VARCHAR,
+    data_fattura TIMESTAMP,
     prezzo_unitario_kWh FLOAT,
     totale_da_pagare FLOAT,
     kWh_consumati_totali INT,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS bollette_luce_history (
 # Query di inserimento
 insert_query = """
 INSERT INTO bollette_luce_history (
-    fornitore, numero_fattura, data_fattura, periodo_fornitura,
+    numero_fattura, fornitore, periodo_fornitura, data_fattura,
     prezzo_unitario_kWh, totale_da_pagare, kWh_consumati_totali,
     kWh_F1_consumati, kWh_F2_consumati, kWh_F3_consumati, canone_tv,
     spese_per_energia, spese_trasporto_gestione_contatore, spese_oneri,

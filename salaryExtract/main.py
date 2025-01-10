@@ -1,5 +1,6 @@
 import json
-import re
+
+from pandas import read_csv
 
 from constants.CommonConstants import *
 from functions.FunctionsV2 import *
@@ -17,6 +18,17 @@ if __name__ == '__main__':
     output_folder = "output"
 
     new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
+
+    initialLoadOnDB = False
+    if initialLoadOnDB:
+        for filename in os.listdir("resources/output"):
+            if filename.endswith('.csv'):
+                csv_path = f"resources/output/{filename}"
+                create_database_and_table(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NEW_DB_NAME, TABLE_NAME,
+                                          TABLE_SCHEMA)
+                read_df = read_csv(csv_path, sep=";")
+                write_df_to_table(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, NEW_DB_NAME, TABLE_NAME, read_df,
+                                  insert_query)
 
     try:
         processed_files = load_processed_files(checkpoint_file)  # Carica i file già elaborati
@@ -45,6 +57,9 @@ if __name__ == '__main__':
                 # Scrittura su AirTable
                 upload_to_airtable_from_dataframe(personal_token, base_id, table_name, transformed_df, key_field)
 
+                # Scrittura su PostgresSQL
+                write_df_to_table(DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, NEW_DB_NAME, TABLE_NAME,
+                                  transformed_df, insert_query)
                 # Aggiorna il checkpoint
                 update_checkpoint(checkpoint_file, [filename])
                 logger.info(f"File {filename} elaborato e salvato con successo.")

@@ -32,6 +32,7 @@ mandatory_fields = [
 ]
 
 columns_to_select = [
+    "record_key",
     "ragione_sociale_azienda",
     "date_periodo_di_retribuzione",
     "string_periodo_di_retribuzione",
@@ -49,11 +50,11 @@ columns_to_select = [
     "quota_tfr",
     "totale_ferie_rimanenti",
     "totale_permessi_rimanenti",
-    "note",
-    "record_key"
+    "note"
 ]
 
 schema = {
+    "record_key": str,  # Concatenazione di Periodo di retribuzione e netto del mese
     "ragione_sociale_azienda": str,  # Nome dell'azienda (stringa)
     "date_periodo_di_retribuzione": "datetime64[ns]",  # Data di inizio periodo di retribuzione (data)
     "string_periodo_di_retribuzione": str,  # Periodo di retribuzione come stringa
@@ -71,8 +72,7 @@ schema = {
     "quota_tfr": float,  # Quota TFR (float)
     "totale_ferie_rimanenti": float,  # Totale ferie rimanenti (float)
     "totale_permessi_rimanenti": float,  # Totale permessi rimanenti (float)
-    "note": str,  # Note (stringa)
-    "record_key": str # Concatenazione di Periodo di retribuzione e netto del mese
+    "note": str  # Note (stringa)
 }
 
 # Valori predefiniti per i tipi
@@ -84,11 +84,12 @@ default_values = {
 }
 
 # Dettagli di connessione al database
-TABLE_NAME = "relatech_buste_paga_history"
+TABLE_NAME = "buste_paga_history"
 
-# Schema della tabella relatech_buste_paga_history
+# Schema della tabella buste_paga_history
 TABLE_SCHEMA = """
-CREATE TABLE IF NOT EXISTS relatech_buste_paga_history (
+CREATE TABLE IF NOT EXISTS buste_paga_history (
+    record_key VARCHAR PRIMARY KEY,
     ragione_sociale_azienda VARCHAR,
     date_periodo_di_retribuzione TIMESTAMP,
     string_periodo_di_retribuzione VARCHAR,
@@ -101,26 +102,25 @@ CREATE TABLE IF NOT EXISTS relatech_buste_paga_history (
     totale_competenze FLOAT,
     totale_trattenute FLOAT,
     arrotondamento FLOAT,
-    netto_del_mese INT,
+    netto_del_mese FLOAT,
     retribuzione_utile_tfr FLOAT,
     quota_tfr FLOAT,
     totale_ferie_rimanenti FLOAT,
     totale_permessi_rimanenti FLOAT,
-    note VARCHAR,
-    record_key VARCHAR
+    note TEXT
 );
 """
 
-# Query di inserimento per relatech_buste_paga_history
+# Query di inserimento per buste_paga_history
 insert_query = """
-INSERT INTO relatech_buste_paga_history (
-    ragione_sociale_azienda, date_periodo_di_retribuzione, string_periodo_di_retribuzione,
+INSERT INTO buste_paga_history (
+    record_key, ragione_sociale_azienda, date_periodo_di_retribuzione, string_periodo_di_retribuzione,
     retribuzione_minima_lorda, giorni_lavorati, ore_lavorate,
     percentuale_maggiorazione_ore_straordinario, ore_straordinarie,
     irpef_pagata, totale_competenze, totale_trattenute,
     arrotondamento, netto_del_mese, retribuzione_utile_tfr,
     quota_tfr, totale_ferie_rimanenti,
-    totale_permessi_rimanenti, note, record_key
+    totale_permessi_rimanenti, note
 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 

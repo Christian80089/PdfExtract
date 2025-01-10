@@ -1,0 +1,10 @@
+periodo_estratto_conto,date_estratto_conto,targa,minimo_mensile,costo_al_km,km_percorsi,km_inclusi,km_da_pagare,km_residui,premio_di_conguaglio,totale_pagato,note
+Aprile 2024,2024-04-01,EP005GS,47.52,0.0588,75,193,0,118,0.0,45.94,Script completato con successo
+Maggio 2024,2024-05-01,EP005GS,47.52,0.0588,144,318,0,174,0.0,47.52,Script completato con successo
+Giugno 2024,2024-06-01,EP005GS,29.49,0.0336,202,374,0,172,0.0,29.49,Script completato con successo
+Luglio 2024,2024-07-01,EP005GS,29.49,0.0336,94,372,0,278,0.0,29.49,Script completato con successo
+Agosto 2024,2024-08-01,EP005GS,29.49,0.0336,277,478,0,201,0.0,29.49,Script completato con successo
+Settembre 2024,2024-09-01,EP005GS,29.49,0.0336,127,401,0,274,0.0,29.49,Script completato con successo
+Ottobre 2024,2024-10-01,EP005GS,29.49,0.0336,279,474,0,195,0.0,29.49,Script completato con successo
+Novembre 2024,2024-11-01,EP005GS,29.49,0.0339,426,395,31,0,1.05,30.54,Script completato con successo
+Dicembre 2024,2024-12-01,EP005GS,29.49,0.0336,562,200,362,0,12.16,41.65,Script completato con successo
