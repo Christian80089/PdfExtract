@@ -1,9 +1,9 @@
 import hashlib
 import locale
 
-from backend.resources.constants.common.Constants import df_default_values
-from backend.resources.constants.salary.RelatechConstants import *
-from backend.resources.functions.DataFrameFunctions import *
+from resources.constants.common.Constants import df_default_values
+from resources.constants.salary.RelatechConstants import *
+from resources.functions.DataFrameFunctions import *
 
 # Configura il logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

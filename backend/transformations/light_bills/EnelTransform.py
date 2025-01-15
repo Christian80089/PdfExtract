@@ -1,13 +1,12 @@
 import locale
 import logging
-from datetime import datetime
 
 import numpy as np
 import pandas as pd
 
-from backend.resources.constants.common.Constants import df_default_values
-from backend.resources.constants.light_bills.LightBillsConstants import light_df_mandatory_fields, light_df_schema
-from backend.resources.functions.DataFrameFunctions import select_columns_from_df, cast_columns_with_defaults
+from resources.constants.common.Constants import df_default_values
+from resources.constants.light_bills.LightBillsConstants import light_df_mandatory_fields, light_df_schema
+from resources.functions.DataFrameFunctions import select_columns_from_df, cast_columns_with_defaults
 
 # Configura il logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

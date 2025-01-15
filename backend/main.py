@@ -1,15 +1,15 @@
 import json
 
-from backend.resources.constants.bank_transactions.BankConstants import bank_key_field, bank_df_columns_to_select, \
+from resources.constants.bank_transactions.BankConstants import bank_key_field, bank_df_columns_to_select, \
     bank_copilot_info_to_extract
-from backend.resources.constants.berebel.BerebelConstants import berebel_key_field, berebel_df_columns_to_select, \
+from resources.constants.berebel.BerebelConstants import berebel_key_field, berebel_df_columns_to_select, \
     berebel_copilot_info_to_extract
-from backend.resources.constants.light_bills.LightBillsConstants import light_key_field, light_df_columns_to_select, \
+from resources.constants.light_bills.LightBillsConstants import light_key_field, light_df_columns_to_select, \
     light_copilot_info_to_extract
-from backend.resources.constants.salary.RelatechConstants import relatech_df_columns_to_select, relatech_key_field, \
+from resources.constants.salary.RelatechConstants import relatech_df_columns_to_select, relatech_key_field, \
     relatech_copilot_info_to_extract
-from backend.resources.functions.CopilotFunctions import run_copilot
-from backend.resources.functions.PdfFunctions import extract_pdf_data
+from resources.functions.CopilotFunctions import run_copilot
+from resources.functions.PdfFunctions import extract_pdf_data
 from backend.transformations.bank_transactions import IngTransform
 from backend.transformations.berebel import BerebelTransform
 from backend.transformations.light_bills import EnelTransform
@@ -21,8 +21,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 if __name__ == '__main__':
-    input_data_folder_path = "resources/input_data"
-    checkpoints_folder_path = "resources/checkpoints/"
+    input_data_folder_path = "../resources/input_data"
+    checkpoints_folder_path = "../resources/checkpoints/"
 
     new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
     processed_files = []
@@ -48,32 +48,32 @@ if __name__ == '__main__':
                         df = pd.read_csv(file_path, delimiter=';',
                                          header=0)  # Crea il DataFrame solo con i dati del file corrente
                         if "bank_transactions" in root.lower():
-                            checkpoint_file = "resources/checkpoints/bank_transactions_processed_files.txt"
-                            output_path = "resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
+                            checkpoint_file = "../resources/checkpoints/bank_transactions_processed_files.txt"
+                            output_path = "../resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
                             transformed_df = IngTransform.transform_df(df, bank_df_columns_to_select, extracted_date)
                             upsert_to_csv(transformed_df, output_path, bank_key_field)
                             # Aggiorna il checkpoint
                             update_checkpoint(checkpoint_file, [filename])
                             logger.info(f"File {filename} elaborato e salvato con successo.")
                         elif "berebel" in root.lower():
-                            checkpoint_file = "resources/checkpoints/berebel_processed_files.txt"
-                            output_path = "resources/output_data/berebel/berebel_history.csv"
+                            checkpoint_file = "../resources/checkpoints/berebel_processed_files.txt"
+                            output_path = "../resources/output_data/berebel/berebel_history.csv"
                             transformed_df = BerebelTransform.transform_df(df, berebel_df_columns_to_select)
                             upsert_to_csv(transformed_df, output_path, berebel_key_field)
                             # Aggiorna il checkpoint
                             update_checkpoint(checkpoint_file, [filename])
                             logger.info(f"File {filename} elaborato e salvato con successo.")
                         elif "light_bills" in root.lower():
-                            checkpoint_file = "resources/checkpoints/light_bills_processed_files.txt"
-                            output_path = "resources/output_data/light_bills/light_bills_history.csv"
+                            checkpoint_file = "../resources/checkpoints/light_bills_processed_files.txt"
+                            output_path = "../resources/output_data/light_bills/light_bills_history.csv"
                             transformed_df = EnelTransform.transform_df(df, light_df_columns_to_select)
                             upsert_to_csv(transformed_df, output_path, light_key_field)
                             # Aggiorna il checkpoint
                             update_checkpoint(checkpoint_file, [filename])
                             logger.info(f"File {filename} elaborato e salvato con successo.")
                         elif "salary" in root.lower():
-                            checkpoint_file = "resources/checkpoints/salary_processed_files.txt"
-                            output_path = "resources/output_data/salary/salary_history.csv"
+                            checkpoint_file = "../resources/checkpoints/salary_processed_files.txt"
+                            output_path = "../resources/output_data/salary/salary_history.csv"
                             transformed_df = RelatechTransform.transform_df(df, relatech_df_columns_to_select)
                             upsert_to_csv(transformed_df, output_path, relatech_key_field)
                             # Aggiorna il checkpoint
@@ -87,52 +87,52 @@ if __name__ == '__main__':
                         formatted_text = re.sub(r'\s+', ' ', text).strip()
 
                         if "bank_transactions" in root.lower():
-                            checkpoint_file = "resources/checkpoints/bank_transactions_processed_files.txt"
+                            checkpoint_file = "../resources/checkpoints/bank_transactions_processed_files.txt"
                             # Interazione con Copilot
                             response_copilot = run_copilot(formatted_text, bank_copilot_info_to_extract)
                             data = json.loads(response_copilot)
                             # Trasformazione dei dati in DataFrame
                             df = pd.DataFrame([data])  # Crea il DataFrame solo con i dati del file corrente
-                            output_path = "resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
+                            output_path = "../resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
                             transformed_df = IngTransform.transform_df(df, bank_df_columns_to_select, extracted_date)
                             upsert_to_csv(transformed_df, output_path, bank_key_field)
                             # Aggiorna il checkpoint
                             update_checkpoint(checkpoint_file, [filename])
                             logger.info(f"File {filename} elaborato e salvato con successo.")
                         elif "berebel" in root.lower():
-                            checkpoint_file = "resources/checkpoints/berebel_processed_files.txt"
+                            checkpoint_file = "../resources/checkpoints/berebel_processed_files.txt"
                             # Interazione con Copilot
                             response_copilot = run_copilot(formatted_text, berebel_copilot_info_to_extract)
                             data = json.loads(response_copilot)
                             # Trasformazione dei dati in DataFrame
                             df = pd.DataFrame([data])  # Crea il DataFrame solo con i dati del file corrente
-                            output_path = "resources/output_data/berebel/berebel_history.csv"
+                            output_path = "../resources/output_data/berebel/berebel_history.csv"
                             transformed_df = BerebelTransform.transform_df(df, berebel_df_columns_to_select)
                             upsert_to_csv(transformed_df, output_path, berebel_key_field)
                             # Aggiorna il checkpoint
                             update_checkpoint(checkpoint_file, [filename])
                             logger.info(f"File {filename} elaborato e salvato con successo.")
                         elif "light_bills" in root.lower():
-                            checkpoint_file = "resources/checkpoints/light_bills_processed_files.txt"
+                            checkpoint_file = "../resources/checkpoints/light_bills_processed_files.txt"
                             # Interazione con Copilot
                             response_copilot = run_copilot(formatted_text, light_copilot_info_to_extract)
                             data = json.loads(response_copilot)
                             # Trasformazione dei dati in DataFrame
                             df = pd.DataFrame([data])  # Crea il DataFrame solo con i dati del file corrente
-                            output_path = "resources/output_data/light_bills/light_bills_history.csv"
+                            output_path = "../resources/output_data/light_bills/light_bills_history.csv"
                             transformed_df = EnelTransform.transform_df(df, light_df_columns_to_select)
                             upsert_to_csv(transformed_df, output_path, light_key_field)
                             # Aggiorna il checkpoint
                             update_checkpoint(checkpoint_file, [filename])
                             logger.info(f"File {filename} elaborato e salvato con successo.")
                         elif "salary" in root.lower():
-                            checkpoint_file = "resources/checkpoints/salary_processed_files.txt"
+                            checkpoint_file = "../resources/checkpoints/salary_processed_files.txt"
                             # Interazione con Copilot
                             response_copilot = run_copilot(formatted_text, relatech_copilot_info_to_extract)
                             data = json.loads(response_copilot)
                             # Trasformazione dei dati in DataFrame
                             df = pd.DataFrame([data])  # Crea il DataFrame solo con i dati del file corrente
-                            output_path = "resources/output_data/salary/salary_history.csv"
+                            output_path = "../resources/output_data/salary/salary_history.csv"
                             transformed_df = RelatechTransform.transform_df(df, relatech_df_columns_to_select)
                             upsert_to_csv(transformed_df, output_path, relatech_key_field)
                             # Aggiorna il checkpoint
