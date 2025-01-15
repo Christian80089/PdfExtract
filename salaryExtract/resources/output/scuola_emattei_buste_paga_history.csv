@@ -1,4 +1,0 @@
-record_key;ragione_sociale_azienda;date_periodo_di_retribuzione;string_periodo_di_retribuzione;retribuzione_minima_lorda;giorni_lavorati;ore_lavorate;percentuale_maggiorazione_ore_straordinario;ore_straordinarie;irpef_pagata;totale_competenze;totale_trattenute;arrotondamento;netto_del_mese;retribuzione_utile_tfr;quota_tfr;totale_ferie_rimanenti;totale_permessi_rimanenti;note
-77dedd8a6468ccbf42d078b1b5fc90af5666da6e63180df2ac66741a7ad33ad7;Scuola E. Mattei;2021-11-01;Novembre 2021;126.63;10;80;0;0;47.54;234.83;28.13;0;206.7;230.1;4.6;0;0;Scuola San Donato Milanese 8h in 2gg
-c6f4676f8a1a12c8fa964782bca65b0fac4407cb5c302d33468d3a6214150009;Scuola E. Mattei;2021-12-01;Dicembre 2021;172.68;10;80;0;0;64.83;320.22;103.16;0;217.06;313.78;6.27;0;0;Scuola San Donato Milanese 8h in 2gg
-2ba247f25834b6609a74231d6843db12d8b78ed57c7cd36039788b0b30dc4526;Scuola E. Mattei;2023-03-01;Marzo 2023;0.0;0;0;0;0;3.85;16.72;3.85;0;12.87;0.0;0.0;0;0;Arretrati a credito
