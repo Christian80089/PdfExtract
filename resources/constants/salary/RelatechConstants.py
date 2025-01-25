@@ -1,3 +1,5 @@
+import datetime
+
 relatech_copilot_info_to_extract = [
     "periodo_di_retribuzione (è una stringa ed è mandatory)",
     "totale_retribuzione_minima_lorda (è un int ed è la somma di Paga Base, Conting, 3Elemen e Sup. ass.) è mandatory",
@@ -54,7 +56,7 @@ relatech_df_columns_to_select = [
 relatech_df_schema = {
     "record_key": str,  # Concatenazione di Periodo di retribuzione e netto del mese
     "ragione_sociale_azienda": str,  # Nome dell'azienda (stringa)
-    "date_periodo_di_retribuzione": "datetime64[ns]",  # Data di inizio periodo di retribuzione (data)
+    "date_periodo_di_retribuzione": object,  # Data di inizio periodo di retribuzione (data)
     "string_periodo_di_retribuzione": str,  # Periodo di retribuzione come stringa
     "retribuzione_minima_lorda": float,  # Retribuzione minima lorda (float)
     "giorni_lavorati": int,  # Giorni lavorati (int)
@@ -79,7 +81,7 @@ relatech_postgresql_table_schema = """
 CREATE TABLE IF NOT EXISTS buste_paga_history (
     record_key VARCHAR PRIMARY KEY,
     ragione_sociale_azienda VARCHAR,
-    date_periodo_di_retribuzione TIMESTAMP,
+    date_periodo_di_retribuzione DATE,
     string_periodo_di_retribuzione VARCHAR,
     retribuzione_minima_lorda FLOAT,
     giorni_lavorati INT,

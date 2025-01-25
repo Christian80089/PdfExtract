@@ -21,7 +21,9 @@ def transform_df(df, columns_to_select):
 
     # Aggiungi colonne al DataFrame
     df["note"] = "Script completato con successo"
-    df["data_fattura"] = pd.to_datetime(df["data_fattura"], format='%Y-%m-%d')
+    df["data_fattura"] = df["data_fattura"].apply(
+        lambda x: pd.to_datetime(f"01-{x}", format="%d-%B %Y").date()
+    )
     logger.info("Colonne base aggiunte")
 
     # Verifica i campi obbligatori e aggiorna la colonna 'note' per i campi mancanti

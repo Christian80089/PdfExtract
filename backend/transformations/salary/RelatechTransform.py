@@ -22,15 +22,17 @@ def transform_df(df, columns_to_select):
 
     # Aggiungi colonne al DataFrame
     df["ragione_sociale_azienda"] = "Relatech Spa"
-    df["date_periodo_di_retribuzione"] = pd.to_datetime("01-" + df["periodo_di_retribuzione"], format="%d-%B %Y")
+    df["date_periodo_di_retribuzione"] = df["periodo_di_retribuzione"].apply(
+        lambda x: pd.to_datetime(f"01-{x}", format="%d-%B %Y").date()
+    )
     df["string_periodo_di_retribuzione"] = df["periodo_di_retribuzione"]
     df["retribuzione_minima_lorda"] = df["totale_retribuzione_minima_lorda"]
     df["percentuale_maggiorazione_ore_straordinario"] = 15
     df["irpef_pagata"] = df["ritenute_irpef"]
     df["note"] = "Script completato con successo"
     df["concatenated_key"] = (
-            df["date_periodo_di_retribuzione"].astype(str) + "|" +
-            df["netto_del_mese"].astype(int).astype(str)
+        df["date_periodo_di_retribuzione"].astype(str) + "|" +
+        df["netto_del_mese"].astype(int).astype(str)
     )
     df["record_key"] = df["concatenated_key"].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
 

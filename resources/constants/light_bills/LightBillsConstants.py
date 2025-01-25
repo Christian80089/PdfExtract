@@ -58,7 +58,7 @@ light_df_columns_to_select = [
 light_df_schema = {
     "fornitore": str,
     "numero_fattura": str,
-    "data_fattura": "datetime64[ns]",
+    "data_fattura": object,
     "periodo_fornitura": str,
     "prezzo_unitario_kWh": float,
     "totale_da_pagare": float,
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS bollette_luce_history (
     numero_fattura VARCHAR PRIMARY KEY,
     fornitore VARCHAR,
     periodo_fornitura VARCHAR,
-    data_fattura TIMESTAMP,
+    data_fattura DATE,
     prezzo_unitario_kWh FLOAT,
     totale_da_pagare FLOAT,
     kWh_consumati_totali INT,

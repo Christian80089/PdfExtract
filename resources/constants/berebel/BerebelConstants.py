@@ -41,7 +41,7 @@ berebel_df_columns_to_select = [
 
 berebel_df_schema = {
     "periodo_estratto_conto": str,
-    "date_estratto_conto": "datetime64[ns]",
+    "date_estratto_conto": object,
     "targa": str,
     "minimo_mensile": float,
     "costo_al_km": float,
@@ -59,7 +59,7 @@ berebel_postgresql_table_name = "berebel_history"
 berebel_postgresql_table_schema = """
 CREATE TABLE IF NOT EXISTS berebel_history (
     periodo_estratto_conto VARCHAR,
-    date_estratto_conto TIMESTAMP,
+    date_estratto_conto DATE,
     targa VARCHAR,
     minimo_mensile FLOAT,
     costo_al_km FLOAT,

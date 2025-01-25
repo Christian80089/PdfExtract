@@ -33,6 +33,9 @@ def transform_df(df, columns_to_select, extracted_date):
     df["causale"] = df["CAUSALE"]
     df["note"] = "File Estratto Conto Trimestrale - Script completato con successo"
     df["data_operazione"] = pd.to_datetime(df["DATA VALUTA"], format='%d/%m/%Y')
+    df["data_operazione"] = df["DATA VALUTA"].apply(
+        lambda x: pd.to_datetime(f"01-{x}", format="%d/%m/%Y").date()
+    )
     df["concatenated_key"] = (
             df["data_operazione"].astype(str) + "|" +
             df["uscite"].astype(str) + "|" +
@@ -42,8 +45,9 @@ def transform_df(df, columns_to_select, extracted_date):
     )
     df["record_key"] = df["concatenated_key"].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
     df["data_estratto_conto"] = extracted_date  # Aggiungi la colonna con la data
-    df["data_estratto_conto"] = pd.to_datetime(df["data_estratto_conto"], format='%d-%m-%Y')
-
+    df["data_estratto_conto"] = df["data_estratto_conto"].apply(
+        lambda x: pd.to_datetime(f"01-{x}", format="%d/%m/%Y").date()
+    )
     df_filtered = df[~df["descrizione"].str.contains("Saldo iniziale|Saldo finale", case=True, na=True)]
 
     logger.info("Colonne base aggiunte")
