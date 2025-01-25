@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from matplotlib.pyplot import margins
 
 # Percorso del file CSV nella cartella resources
 base_path = os.path.abspath(os.path.dirname(__file__))
@@ -55,48 +56,58 @@ if data is not None:
     st.header("Statistiche generali")
 
     # Calcolo delle metriche principali
+    totale_lordo = filtered_data['totale_competenze'].sum()
+    totale_trattenute = filtered_data['totale_trattenute'].sum()
     totale_netto = filtered_data['netto_del_mese'].sum()
     media_netto = filtered_data['netto_del_mese'].mean()
-    totale_lordo = filtered_data['totale_competenze'].sum()
-    media_ore_lavorate = filtered_data['ore_lavorate'].mean()
-    totale_straordinari = filtered_data['ore_straordinarie'].sum()
+    tfr_maturato_lordo = filtered_data['quota_tfr'].sum()
     totale_irpef = filtered_data['irpef_pagata'].sum()
+    giorni_lavorati = filtered_data['giorni_lavorati'].sum()
     ferie_rimanenti = round(filtered_data['totale_ferie_rimanenti'].iloc[-1], 2)
     permessi_rimanenti = round(filtered_data['totale_permessi_rimanenti'].iloc[-1], 2)
 
     # Visualizzazione delle metriche principali
     col1, col2, col3 = st.columns(3)
-    col1.metric("Totale Stipendio Netto", f"{format_number(totale_netto)} €")
-    col2.metric("Media Stipendio Netto", f"{format_number(media_netto)} €")
-    col3.metric("Totale Retribuzione Lorda", f"{format_number(totale_lordo)} €")
+    col1.metric("Totale Retribuzione Lorda", f"{format_number(totale_lordo)} €")
+    col2.metric("Totale Trattenute", f"{format_number(totale_trattenute)} €")
+    col3.metric("Totale Retribuzione Netta", f"{format_number(totale_netto)} €")
 
     col4, col5, col6 = st.columns(3)
-    col4.metric("Ferie Rimanenti (Giorni)", format_number(ferie_rimanenti))
-    col5.metric("Permessi Rimanenti (Ore)", format_number(permessi_rimanenti))
+    col4.metric("Media Retribuzione Netta", f"{format_number(media_netto)} €")
+    col5.metric("TFR Lordo Maturato", f"{format_number(tfr_maturato_lordo)} €")
     col6.metric("Totale IRPEF Pagata", f"{format_number(totale_irpef)} €")
+
+    col7, col8, col9 = st.columns(3)
+    col7.metric("Ferie Rimanenti (Giorni)", format_number(ferie_rimanenti))
+    col8.metric("Permessi Rimanenti (Ore)", format_number(permessi_rimanenti))
+    col9.metric("Totale Giorni Lavorati", format_number(giorni_lavorati))
 
     st.header("Grafico temporale dello stipendio netto")
 
+    df_aggregated = filtered_data.groupby('date_periodo_di_retribuzione', as_index=False).agg({'netto_del_mese': 'sum'})
+
     # Grafico temporale dello stipendio netto
-    fig = px.line(
-        filtered_data,
+    fig = px.bar(
+        df_aggregated,
         x='date_periodo_di_retribuzione',
         y='netto_del_mese',
         title='Andamento dello Stipendio Netto Mensile',
-        labels={"date_periodo_di_retribuzione": "Periodo", "netto_del_mese": "Stipendio Netto"}
+        labels={"date_periodo_di_retribuzione": "Periodo", "netto_del_mese": "Stipendio Netto"},
+        color_discrete_sequence=["green"]
     )
+
+    # Aggiungi i valori sopra le barre
+    fig.update_traces(
+        text=df_aggregated['netto_del_mese'],  # Mostra il valore sopra ogni barra
+        textposition='outside',  # Posiziona il testo sopra le barre
+        marker=dict(line=dict(width=1, color='black'))  # Aggiunge un bordo nero alle barre
+    )
+
+    # Personalizzazione per aumentare la visibilità delle barre
+    fig.update_layout(
+        xaxis=dict(tickangle=45)
+    )
+
     st.plotly_chart(fig)
-
-    st.header("Ripartizione tra competenze e trattenute")
-
-    # Grafico a torta tra competenze e trattenute
-    totale_competenze = filtered_data['totale_competenze'].sum()
-    totale_trattenute = filtered_data['totale_trattenute'].sum()
-    pie_data = pd.DataFrame({
-        "Categoria": ["Competenze", "Trattenute"],
-        "Totale": [totale_competenze, totale_trattenute]
-    })
-    fig3 = px.pie(pie_data, values='Totale', names='Categoria', title='Ripartizione tra Competenze e Trattenute')
-    st.plotly_chart(fig3)
 else:
     st.warning("Carica un file CSV per iniziare.")
