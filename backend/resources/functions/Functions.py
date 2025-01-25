@@ -160,3 +160,39 @@ def upsert_to_csv(dataframe, csv_path, key_column):
         logger.info(f"Aggiunti {len(new_data)} record nuovi a {csv_path}")
     else:
         logger.info("Nessun nuovo record da aggiungere.")
+
+def print_project_structure(directory, exclude_folders=None, indent=0, last_item=False):
+    # Imposta una lista di cartelle da escludere, se non viene specificata ne usa una vuota
+    exclude_folders = exclude_folders or []
+
+    # Aggiungi '_pycache_' alla lista delle cartelle da escludere
+    exclude_folders.append("__pycache__")
+
+    # Lista tutti gli elementi nella directory
+    items = os.listdir(directory)
+    for i, item in enumerate(items):
+        item_path = os.path.join(directory, item)
+
+        # Se l'elemento è una cartella da escludere, salta l'iterazione
+        if item in exclude_folders:
+            continue
+
+        # Verifica se l'elemento è una directory
+        if os.path.isdir(item_path):
+            # Verifica se è l'ultimo elemento della directory per decidere il simbolo da usare
+            is_last_item = (i == len(items) - 1)
+
+            # Aggiungi simboli di struttura per la leggibilità
+            connector = "└── " if last_item else "├── "
+            line = '  ' * indent + (connector if is_last_item else "├── ") + item
+            print(line)
+
+            # Chiamata ricorsiva per la directory
+            print_project_structure(item_path, exclude_folders, indent + 1, is_last_item)
+
+        # Includi solo i file .py
+        elif item.endswith(".py"):
+            is_last_item = (i == len(items) - 1)
+            connector = "└── " if last_item else "├── "
+            line = '  ' * indent + (connector if is_last_item else "├── ") + item
+            print(line)

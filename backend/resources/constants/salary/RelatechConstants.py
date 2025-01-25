@@ -1,5 +1,3 @@
-import datetime
-
 relatech_copilot_info_to_extract = [
     "periodo_di_retribuzione (è una stringa ed è mandatory)",
     "totale_retribuzione_minima_lorda (è un int ed è la somma di Paga Base, Conting, 3Elemen e Sup. ass.) è mandatory",
