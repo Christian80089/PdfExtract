@@ -5,9 +5,9 @@ import logging
 import numpy as np
 import pandas as pd
 
-from resources.constants.common.Constants import df_default_values
-from resources.constants.salary.RelatechConstants import relatech_df_mandatory_fields, relatech_df_schema
-from resources.functions.DataFrameFunctions import select_columns_from_df, cast_columns_with_defaults
+from backend.resources.constants.common.Constants import df_default_values
+from backend.resources.constants.salary.RelatechConstants import relatech_df_mandatory_fields, relatech_df_schema
+from backend.resources.functions.DataFrameFunctions import select_columns_from_df, cast_columns_with_defaults
 
 # Configura il logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

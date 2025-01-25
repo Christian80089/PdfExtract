@@ -3,116 +3,139 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-# Percorso del file CSV nella cartella resources
-base_path = os.path.abspath(os.path.dirname(__file__))
-csv_path = os.path.join(base_path, "../resources/output_data/salary/salary_history.csv")
 
-# Carica il CSV
-def load_data():
+# Function to load data
+def load_data(input_path):
     try:
-        csv_data = pd.read_csv(csv_path)
+        csv_data = pd.read_csv(input_path)
         return csv_data
     except FileNotFoundError:
-        st.error("Il file CSV non è stato trovato. Verifica il percorso e riprova.")
+        st.error("The CSV file was not found. Please check the path and try again.")
         return None
 
-# Funzione per formattare i numeri con punto per le migliaia e virgola per i decimali
+
+# Function to format numbers with commas for thousands and dots for decimals
 def format_number(value):
     return f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-# Funzione principale
-st.title("Dashboard Analisi Stipendi")
-data = load_data()
 
-if data is not None:
-    # Conversione della colonna delle date
-    data['date_periodo_di_retribuzione'] = pd.to_datetime(data['date_periodo_di_retribuzione'])
+# Function for the main dashboard
+def salary_dashboard(input_df):
+    st.title("Salary Dashboard Analysis")
+    st.header("General Statistics")
 
-    # Selezione del range temporale
-    st.sidebar.header("Filtra per periodo")
+    # Convert date column
+    input_df['date_periodo_di_retribuzione'] = pd.to_datetime(input_df['date_periodo_di_retribuzione'])
+
+    # Date range selection
+    st.sidebar.header("Filter by Period")
     start_date, end_date = st.sidebar.date_input(
-        "Seleziona il range di date",
-        [data['date_periodo_di_retribuzione'].min(), data['date_periodo_di_retribuzione'].max()]
+        "Select Date Range",
+        [input_df['date_periodo_di_retribuzione'].min(), input_df['date_periodo_di_retribuzione'].max()]
     )
 
-    # Filtro per ragione sociale azienda
-    st.sidebar.header("Filtra per azienda")
-    azienda_options = data['ragione_sociale_azienda'].unique()
-    azienda_selezionata = st.sidebar.selectbox(
-        "Seleziona Azienda",
-        azienda_options,
-        index=list(azienda_options).index("Relatech Spa")  # Imposta "Relatech Spa" come valore predefinito
+    # Filter by company
+    st.sidebar.header("Filter by Company")
+    company_options = input_df['ragione_sociale_azienda'].unique()
+    selected_company = st.sidebar.selectbox(
+        "Select Company",
+        company_options,
+        index=list(company_options).index("Relatech Spa") if "Relatech Spa" in company_options else 0
     )
 
-    # Filtra i dati in base al range di date e azienda
-    filtered_data = data[
-        (data['date_periodo_di_retribuzione'] >= pd.to_datetime(start_date)) &
-        (data['date_periodo_di_retribuzione'] <= pd.to_datetime(end_date)) &
-        (data['ragione_sociale_azienda'] == azienda_selezionata)
+    # Filter data based on date range and company
+    filtered_data = input_df[
+        (input_df['date_periodo_di_retribuzione'] >= pd.to_datetime(start_date)) &
+        (input_df['date_periodo_di_retribuzione'] <= pd.to_datetime(end_date)) &
+        (input_df['ragione_sociale_azienda'] == selected_company)
     ]
 
-    st.header("Statistiche generali")
+    # Calculate key metrics
+    total_gross = filtered_data['totale_competenze'].sum()
+    total_deductions = filtered_data['totale_trattenute'].sum()
+    total_net = filtered_data['netto_del_mese'].sum()
+    average_net = filtered_data['netto_del_mese'].mean()
+    accrued_tfr_gross = filtered_data['quota_tfr'].sum()
+    total_irpef = filtered_data['irpef_pagata'].sum()
+    worked_days = filtered_data['giorni_lavorati'].sum()
+    remaining_holidays = round(filtered_data['totale_ferie_rimanenti'].iloc[-1], 2)
+    remaining_permissions = round(filtered_data['totale_permessi_rimanenti'].iloc[-1], 2)
 
-    # Calcolo delle metriche principali
-    totale_lordo = filtered_data['totale_competenze'].sum()
-    totale_trattenute = filtered_data['totale_trattenute'].sum()
-    totale_netto = filtered_data['netto_del_mese'].sum()
-    media_netto = filtered_data['netto_del_mese'].mean()
-    tfr_maturato_lordo = filtered_data['quota_tfr'].sum()
-    totale_irpef = filtered_data['irpef_pagata'].sum()
-    giorni_lavorati = filtered_data['giorni_lavorati'].sum()
-    ferie_rimanenti = round(filtered_data['totale_ferie_rimanenti'].iloc[-1], 2)
-    permessi_rimanenti = round(filtered_data['totale_permessi_rimanenti'].iloc[-1], 2)
-
-    # Visualizzazione delle metriche principali
+    # Display key metrics
     col1, col2, col3 = st.columns(3)
-    col1.metric("Totale Retribuzione Lorda", f"{format_number(totale_lordo)} €")
-    col2.metric("Totale Trattenute", f"{format_number(totale_trattenute)} €")
-    col3.metric("Totale Retribuzione Netta", f"{format_number(totale_netto)} €")
+    col1.metric("Total Gross Salary", f"{format_number(total_gross)} €")
+    col2.metric("Total Deductions", f"{format_number(total_deductions)} €")
+    col3.metric("Total Net Salary", f"{format_number(total_net)} €")
 
     col4, col5, col6 = st.columns(3)
-    col4.metric("Media Retribuzione Netta", f"{format_number(media_netto)} €")
-    col5.metric("TFR Lordo Maturato", f"{format_number(tfr_maturato_lordo)} €")
-    col6.metric("Totale IRPEF Pagata", f"{format_number(totale_irpef)} €")
+    col4.metric("Average Net Salary", f"{format_number(average_net)} €")
+    col5.metric("Accrued Gross TFR", f"{format_number(accrued_tfr_gross)} €")
+    col6.metric("Total IRPEF Paid", f"{format_number(total_irpef)} €")
 
     col7, col8, col9 = st.columns(3)
-    col7.metric("Ferie Rimanenti (Giorni)", format_number(ferie_rimanenti))
-    col8.metric("Permessi Rimanenti (Ore)", format_number(permessi_rimanenti))
-    col9.metric("Totale Giorni Lavorati", format_number(giorni_lavorati))
+    col7.metric("Remaining Holidays (Days)", format_number(remaining_holidays))
+    col8.metric("Remaining Permissions (Hours)", format_number(remaining_permissions))
+    col9.metric("Total Worked Days", format_number(worked_days))
 
-    st.header("Grafico temporale dello stipendio netto")
-
+    # Net salary time series chart
+    st.header("Net Salary Chart")
     df_aggregated = filtered_data.groupby('date_periodo_di_retribuzione', as_index=False).agg({'netto_del_mese': 'sum'})
 
-    # Grafico temporale dello stipendio netto
     fig = px.bar(
         df_aggregated,
         x='date_periodo_di_retribuzione',
         y='netto_del_mese',
-        title='Andamento dello Stipendio Netto Mensile',
-        labels={"date_periodo_di_retribuzione": "Periodo", "netto_del_mese": "Stipendio Netto"},
+        title='Net Monthly Salary Trend',
+        labels={"date_periodo_di_retribuzione": "Period", "netto_del_mese": "Net Salary"},
         color_discrete_sequence=["green"]
     )
-
-    # Aggiungi i valori sopra le barre
-    fig.update_traces(
-        text=df_aggregated['netto_del_mese'],  # Mostra il valore sopra ogni barra
-        textposition='outside',  # Posiziona il testo sopra le barre
-        marker=dict(line=dict(width=1, color='black'))  # Aggiunge un bordo nero alle barre
-    )
-
-    # Personalizzazione per aumentare la visibilità delle barre
-    fig.update_layout(
-        xaxis=dict(tickangle=45)
-    )
-
+    fig.update_traces(text=df_aggregated['netto_del_mese'], textposition='outside')
+    fig.update_layout(xaxis=dict(tickangle=45))
     st.plotly_chart(fig)
 
-    # Rimuovi la colonna 'record_key' e rinomina le intestazioni
-    filtered_data = filtered_data.drop(columns=['record_key', 'date_periodo_di_retribuzione', 'percentuale_maggiorazione_ore_straordinario'])
-    filtered_data.columns = [col.replace('_', ' ').title() for col in filtered_data.columns]  # Rimuove gli underscore e capitalizza le parole
+    # Filtered data table
+    filtered_data = (filtered_data
+    .sort_values(by='date_periodo_di_retribuzione', ascending=False)
+    .drop(columns=['record_key', 'date_periodo_di_retribuzione', 'percentuale_maggiorazione_ore_straordinario']))
+    filtered_data.columns = [col.replace('_', ' ').title() for col in filtered_data.columns]
 
-    st.header("Tabella dei Dati Filtrati")
-    st.dataframe(filtered_data)  # Visualizza la tabella dei dati filtrati
+    st.header("Filtered Data Table")
+    st.dataframe(filtered_data)
+
+
+# Function for the "Other Charts" page
+def other_charts(input_df):
+    st.title("Other Charts - Salary Analysis")
+    st.header("Breakdown of Earnings and Deductions")
+
+    total_earnings = input_df['totale_competenze'].sum()
+    total_deductions = input_df['totale_trattenute'].sum()
+
+    pie_data = pd.DataFrame({
+        "Category": ["Earnings", "Deductions"],
+        "Total": [total_earnings, total_deductions]
+    })
+
+    fig = px.pie(pie_data, values='Total', names='Category', title="Earnings/Deductions Breakdown")
+    st.plotly_chart(fig)
+
+
+# CSV file path in the resources folder
+base_path = os.path.abspath(os.path.dirname(__file__))
+csv_path = os.path.join(base_path, "../backend/resources/output_data/salary/salary_history.csv")
+
+# Load data
+data = load_data(csv_path)
+
+# Sidebar for navigation
+st.sidebar.title("Navigation")
+page = st.sidebar.radio("Select Page", ["Salary Dashboard", "Other Charts"])
+
+# Display selected page
+if data is not None:
+    if page == "Salary Dashboard":
+        salary_dashboard(data)
+    elif page == "Other Charts":
+        other_charts(data)
 else:
-    st.warning("Carica un file CSV per iniziare.")
+    st.warning(f"Upload a CSV file to start or check the path: Root: {base_path} - Folder: {csv_path}")
