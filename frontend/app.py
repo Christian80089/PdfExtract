@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from matplotlib.pyplot import margins
 
 # Percorso del file CSV nella cartella resources
 base_path = os.path.abspath(os.path.dirname(__file__))
@@ -16,7 +15,6 @@ def load_data():
     except FileNotFoundError:
         st.error("Il file CSV non è stato trovato. Verifica il percorso e riprova.")
         return None
-
 
 # Funzione per formattare i numeri con punto per le migliaia e virgola per i decimali
 def format_number(value):
@@ -109,5 +107,12 @@ if data is not None:
     )
 
     st.plotly_chart(fig)
+
+    # Rimuovi la colonna 'record_key' e rinomina le intestazioni
+    filtered_data = filtered_data.drop(columns=['record_key', 'date_periodo_di_retribuzione', 'percentuale_maggiorazione_ore_straordinario'])
+    filtered_data.columns = [col.replace('_', ' ').title() for col in filtered_data.columns]  # Rimuove gli underscore e capitalizza le parole
+
+    st.header("Tabella dei Dati Filtrati")
+    st.dataframe(filtered_data)  # Visualizza la tabella dei dati filtrati
 else:
     st.warning("Carica un file CSV per iniziare.")
