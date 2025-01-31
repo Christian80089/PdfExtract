@@ -50,6 +50,16 @@ def salary_dashboard(input_df):
         (input_df['ragione_sociale_azienda'] == selected_company)
     ]
 
+    today = pd.Timestamp.today()
+    six_months_ago = today - pd.DateOffset(months=6)
+    start_of_six_months_ago = six_months_ago.replace(day=1)
+
+    chart_filtered_data = input_df[
+        (input_df['date_periodo_di_retribuzione'] >= start_of_six_months_ago) &
+        (input_df['date_periodo_di_retribuzione'] <= today) &
+        (input_df['ragione_sociale_azienda'] == selected_company)
+        ]
+
     # Calculate key metrics
     total_gross = filtered_data['totale_competenze'].sum()
     total_deductions = filtered_data['totale_trattenute'].sum()
@@ -78,8 +88,7 @@ def salary_dashboard(input_df):
     col9.metric("Total Worked Days", format_number(worked_days))
 
     # Net salary time series chart
-    st.header("Net Salary Chart")
-    df_aggregated = filtered_data.groupby('date_periodo_di_retribuzione', as_index=False).agg({'netto_del_mese': 'sum'})
+    df_aggregated = chart_filtered_data.groupby('date_periodo_di_retribuzione', as_index=False).agg({'netto_del_mese': 'sum'})
 
     fig = px.bar(
         df_aggregated,
@@ -99,7 +108,6 @@ def salary_dashboard(input_df):
     .drop(columns=['record_key', 'date_periodo_di_retribuzione', 'percentuale_maggiorazione_ore_straordinario']))
     filtered_data.columns = [col.replace('_', ' ').title() for col in filtered_data.columns]
 
-    st.header("Filtered Data Table")
     st.dataframe(filtered_data)
 
 
@@ -137,6 +145,16 @@ def bank_transactions_charts(input_df):
         (input_df['causale'].isin(selected_categories))
         ]
 
+    today = pd.Timestamp.today()
+    six_months_ago = today - pd.DateOffset(months=6)
+    start_of_six_months_ago = six_months_ago.replace(day=1)
+
+    chart_filtered_data = input_df[
+        (input_df['data_operazione'] >= start_of_six_months_ago) &
+        (input_df['data_operazione'] <= today) &
+        (input_df['causale'].isin(selected_categories))
+        ]
+
     # Calculate key metrics
     filtered_data['entrate'] = filtered_data['entrate'].str.replace(',', '.', regex=False)
     filtered_data['uscite'] = filtered_data['uscite'].str.replace(',', '.', regex=False)
@@ -145,10 +163,18 @@ def bank_transactions_charts(input_df):
     filtered_data['entrate'] = filtered_data['entrate'].fillna(0)
     filtered_data['uscite'] = filtered_data['uscite'].fillna(0)
 
+    chart_filtered_data['entrate'] = chart_filtered_data['entrate'].str.replace(',', '.', regex=False)
+    chart_filtered_data['uscite'] = chart_filtered_data['uscite'].str.replace(',', '.', regex=False)
+    chart_filtered_data['entrate'] = pd.to_numeric(chart_filtered_data['entrate'], errors='coerce')
+    chart_filtered_data['uscite'] = pd.to_numeric(chart_filtered_data['uscite'], errors='coerce')
+    chart_filtered_data['entrate'] = chart_filtered_data['entrate'].fillna(0)
+    chart_filtered_data['uscite'] = chart_filtered_data['uscite'].fillna(0)
+
     total_income = filtered_data['entrate'].sum()
     total_expenses = filtered_data['uscite'].sum()
     balance = total_income + total_expenses
     filtered_data['month'] = filtered_data['data_operazione'].dt.to_period('M').astype(str)
+    chart_filtered_data['month'] = chart_filtered_data['data_operazione'].dt.to_period('M').astype(str)
     monthly_stats = filtered_data.groupby('month').agg({'entrate': 'sum', 'uscite': 'sum'})
     average_monthly_income = monthly_stats['entrate'].mean()
     average_monthly_expenses = monthly_stats['uscite'].mean()
@@ -166,8 +192,7 @@ def bank_transactions_charts(input_df):
     col6.metric("Avarege Balance", f"{format_number(average_balance):} €")
 
     # Monthly Expenses Trend
-    st.header("Monthly Expenses Trend")
-    df_aggregated = filtered_data.groupby('month', as_index=False).agg({'uscite': 'sum'})
+    df_aggregated = chart_filtered_data.groupby('month', as_index=False).agg({'uscite': 'sum'})
     fig = px.bar(
         df_aggregated,
         x='month',
@@ -186,8 +211,7 @@ def bank_transactions_charts(input_df):
     st.plotly_chart(fig)
 
     # Monthly Income Trend
-    st.header("Monthly Income Trend")
-    df_aggregated = filtered_data.groupby('month', as_index=False).agg({'entrate': 'sum'})
+    df_aggregated = chart_filtered_data.groupby('month', as_index=False).agg({'entrate': 'sum'})
     fig = px.bar(
         df_aggregated,
         x='month',
@@ -206,7 +230,6 @@ def bank_transactions_charts(input_df):
     st.plotly_chart(fig)
 
     # Expenses Pie Chart
-    st.header("Expenses Pie Chart")
     df_category_expenses = filtered_data.groupby('causale', as_index=False).agg({'uscite': 'sum'})
     df_category_expenses['uscite'] = df_category_expenses['uscite'].abs()
     df_category_expenses = df_category_expenses[df_category_expenses['uscite'] != 0]
@@ -222,20 +245,130 @@ def bank_transactions_charts(input_df):
     fig_pie.update_traces(textinfo='percent+label', pull=[0.1] * len(df_category_expenses))
     st.plotly_chart(fig_pie)
 
+def berebel_dashboard(input_df):
+    st.title("Berebel Dashboard Analysis")
+    st.header("General Statistics")
+
+    # Convert date column
+    input_df['date_estratto_conto'] = pd.to_datetime(input_df['date_estratto_conto'])
+
+    # Date range selection
+    st.sidebar.header("Filter by Period")
+    start_date, end_date = st.sidebar.date_input(
+        "Select Date Range",
+        [input_df['date_estratto_conto'].min(), input_df['date_estratto_conto'].max()]
+    )
+
+    # Filter data based on date range and company
+    filtered_data = input_df[
+        (input_df['date_estratto_conto'] >= pd.to_datetime(start_date)) &
+        (input_df['date_estratto_conto'] <= pd.to_datetime(end_date))
+    ]
+
+    today = pd.Timestamp.today()
+    twelve_months_ago = today - pd.DateOffset(months=12)
+    start_of_twelve_months_ago = twelve_months_ago.replace(day=1)
+
+    chart_filtered_data = input_df[
+        (input_df['date_estratto_conto'] >= start_of_twelve_months_ago) &
+        (input_df['date_estratto_conto'] <= today)
+        ]
+
+    # Calculate key metrics
+    travelled_km = filtered_data['km_percorsi'].sum()
+    additional_km = filtered_data['km_da_pagare'].sum()
+    avg_travelled_km = filtered_data['km_percorsi'].mean()
+    total_minimum_monthly = filtered_data['minimo_mensile'].sum()
+    total_additional_km_cost = filtered_data['premio_di_conguaglio'].sum()
+    total_paid = filtered_data['totale_pagato'].sum()
+
+    # Display key metrics
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Travelled Km", f"{travelled_km}")
+    col2.metric("Additional Km", f"{additional_km}")
+    col3.metric("Avg Travelled Km", f"{format_number(avg_travelled_km)}")
+
+    col4, col5, col6 = st.columns(3)
+    col4.metric("Total Monthly Minimum", f"{format_number(total_minimum_monthly)} €")
+    col5.metric("Total Cost Additional Km", f"{format_number(total_additional_km_cost)} €")
+    col6.metric("Total Paid", f"{format_number(total_paid)} €")
+
+    df_aggregated = chart_filtered_data.groupby('date_estratto_conto', as_index=False).agg({'km_percorsi': 'sum'})
+
+    fig = px.bar(
+        df_aggregated,
+        x='date_estratto_conto',
+        y='km_percorsi',
+        title='Monthly Travelled Km',
+        labels={"date_estratto_conto": "Period", "km_percorsi": "Km Travelled"},
+        color_discrete_sequence=["lightskyblue"]
+    )
+    fig.update_traces(text=df_aggregated['km_percorsi'].apply(lambda x: f"{x:,.0f} km"), textposition='outside')
+    fig.update_layout(xaxis=dict(tickangle=45))
+    st.plotly_chart(fig)
+
+    df_aggregated = chart_filtered_data.groupby('date_estratto_conto', as_index=False).agg({'totale_pagato': 'sum'})
+    df_aggregated['Budget'] = df_aggregated['totale_pagato'].apply(lambda x: 'OnBudget' if x <= 50 else 'OverBudget')
+
+    fig = px.bar(
+        df_aggregated,
+        x='date_estratto_conto',
+        y='totale_pagato',
+        title='Monthly Costs',
+        labels={"date_estratto_conto": "Period", "totale_pagato": "Total Paid"},
+        color='Budget',
+        color_discrete_map={"OnBudget": "green", "OverBudget": "red"}
+    )
+    fig.update_traces(text=df_aggregated['totale_pagato'].apply(lambda x: f"€ {x:,.2f}"), textposition='outside')
+    fig.update_layout(xaxis=dict(tickangle=45))
+    st.plotly_chart(fig)
+
+    filtered_data['year'] = filtered_data['date_estratto_conto'].dt.to_period('Y').astype(str)
+    df_category_expenses = filtered_data.groupby('year', as_index=False).agg({'km_percorsi': 'sum'})
+
+    fig_pie = px.pie(
+        df_category_expenses,
+        names='year',
+        values='km_percorsi',
+        title='Yearly Travelled Km',
+        labels={'year': 'Year', 'km_percorsi': 'Km Travelled'},
+        color='year',
+        color_discrete_sequence=px.colors.qualitative.Set2_r
+    )
+    fig_pie.update_traces(textinfo='percent+label', pull=[0.1] * len(df_category_expenses))
+    st.plotly_chart(fig_pie)
+
+    filtered_data['year'] = filtered_data['date_estratto_conto'].dt.to_period('Y').astype(str)
+    df_category_expenses = filtered_data.groupby('year', as_index=False).agg({'totale_pagato': 'sum'})
+
+    fig_pie = px.pie(
+        df_category_expenses,
+        names='year',
+        values='totale_pagato',
+        title='Yearly Costs Percentage',
+        labels={'year': 'Year', 'totale_pagato': 'Total Paid'},
+        color='year',
+        color_discrete_sequence=px.colors.qualitative.Set2_r
+    )
+    fig_pie.update_traces(textinfo='percent+label', pull=[0.1] * len(df_category_expenses))
+    st.plotly_chart(fig_pie)
+
 
 # CSV file path in the resources folder
 base_path = os.path.abspath(os.path.dirname(__file__))
 salary_csv_path = os.path.join(base_path, "../backend/resources/output_data/salary/salary_history.csv")
 bank_transactions_ing_csv_path = os.path.join(base_path, "../backend/resources/output_data/bank_transactions/ing/bank_transactions_history.csv")
+berebel_csv_path = os.path.join(base_path, "../backend/resources/output_data/berebel/berebel_history.csv")
 
 
 # Load data
 salary_data = load_data(salary_csv_path)
 bank_transactions_data = load_data(bank_transactions_ing_csv_path)
+berebel_data = load_data(berebel_csv_path)
 
 # Sidebar for navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select Page", ["Salary Dashboard", "Bank Transactions Dashboard"])
+page = st.sidebar.radio("Select Page", ["Salary Dashboard", "Bank Transactions Dashboard", "BeRebel Dashboard"])
 
 # Display selected page
 if salary_data is not None:
@@ -243,5 +376,7 @@ if salary_data is not None:
         salary_dashboard(salary_data)
     elif page == "Bank Transactions Dashboard":
         bank_transactions_charts(bank_transactions_data)
+    elif page == "BeRebel Dashboard":
+        berebel_dashboard(berebel_data)
 else:
     st.warning(f"Upload a CSV file to start or check the path: Root: {base_path} - Folder: {salary_csv_path}")
