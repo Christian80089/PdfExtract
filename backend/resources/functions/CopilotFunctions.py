@@ -10,7 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from backend.resources.functions.Functions import concat_fields
 
 # Configurazione del logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger()
 
 
@@ -41,7 +43,9 @@ def run_copilot(input_text, info_to_extract):
             ).click()
             logger.info("Pulsante 'Inizia' cliccato.")
         except Exception:
-            logger.warning("Pulsante 'Inizia' non trovato. Procedo al passaggio successivo.")
+            logger.warning(
+                "Pulsante 'Inizia' non trovato. Procedo al passaggio successivo."
+            )
 
         # Tentativo di inserire "Christian"
         try:
@@ -51,7 +55,9 @@ def run_copilot(input_text, info_to_extract):
             ).send_keys("Christian", Keys.RETURN)
             logger.info("'Christian' inserito con successo.")
         except Exception:
-            logger.warning("Casella di input per 'Christian' non trovata. Procedo al passaggio successivo.")
+            logger.warning(
+                "Casella di input per 'Christian' non trovata. Procedo al passaggio successivo."
+            )
 
         # Tentativo di cliccare su "Avanti"
         try:
@@ -61,7 +67,9 @@ def run_copilot(input_text, info_to_extract):
             ).click()
             logger.info("Pulsante 'Avanti' cliccato.")
         except Exception:
-            logger.warning("Pulsante 'Avanti' non trovato. Procedo al passaggio successivo.")
+            logger.warning(
+                "Pulsante 'Avanti' non trovato. Procedo al passaggio successivo."
+            )
 
         # Invio della query
         query = f"Estrai le seguenti informazioni senza commenti, in formato json, su una sola riga e in un blocco di codice: {concat_fields(info_to_extract)} dal seguente testo non formattato: {input_text}"
@@ -73,14 +81,18 @@ def run_copilot(input_text, info_to_extract):
             question_box.send_keys(query, Keys.RETURN)
             logger.info("Query inviata con successo.")
         except Exception:
-            logger.error("Casella di input per la query non trovata. Interazione fallita.")
+            logger.error(
+                "Casella di input per la query non trovata. Interazione fallita."
+            )
             return None
 
         # Attesa della risposta
         logger.info("Attesa della risposta da Copilot.")
         time.sleep(10)
         response_element = WebDriverWait(driver, 10).until(
-            ec.presence_of_element_located((By.XPATH, '//*[@class="text-sm font-ligatures-none"]'))
+            ec.presence_of_element_located(
+                (By.XPATH, '//*[@class="text-sm font-ligatures-none"]')
+            )
         )
         logger.info("Risposta ricevuta da Copilot.")
 
@@ -91,7 +103,9 @@ def run_copilot(input_text, info_to_extract):
 
     except Exception as e:
         # In caso di errore durante l'interazione, viene loggato il messaggio di errore
-        logger.error(f"Si è verificato un errore durante l'interazione con Copilot: {e}")
+        logger.error(
+            f"Si è verificato un errore durante l'interazione con Copilot: {e}"
+        )
     finally:
         # Garantiamo che il driver venga sempre chiuso, anche se si è verificato un errore
         if driver:

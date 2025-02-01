@@ -12,7 +12,7 @@ relatech_copilot_info_to_extract = [
     "retribuzione_utile_tfr (è un double ed è mandatory)",
     "quota_tfr (è un double ed è mandatory)",
     "totale_ferie_rimanenti (Saldo Ferie è un double non arrotondare)",
-    "totale_permessi_rimanenti (Saldo R.O.L è un double non arrotondare)"
+    "totale_permessi_rimanenti (Saldo R.O.L è un double non arrotondare)",
 ]
 
 relatech_df_mandatory_fields = [
@@ -26,7 +26,7 @@ relatech_df_mandatory_fields = [
     "retribuzione_utile_tfr",
     "quota_tfr",
     "totale_ferie_rimanenti",
-    "totale_permessi_rimanenti"
+    "totale_permessi_rimanenti",
 ]
 
 relatech_df_columns_to_select = [
@@ -48,7 +48,7 @@ relatech_df_columns_to_select = [
     "quota_tfr",
     "totale_ferie_rimanenti",
     "totale_permessi_rimanenti",
-    "note"
+    "note",
 ]
 
 relatech_df_schema = {
@@ -70,7 +70,7 @@ relatech_df_schema = {
     "quota_tfr": float,  # Quota TFR (float)
     "totale_ferie_rimanenti": float,  # Totale ferie rimanenti (float)
     "totale_permessi_rimanenti": float,  # Totale permessi rimanenti (float)
-    "note": str  # Note (stringa)
+    "note": str,  # Note (stringa)
 }
 
 relatech_postgresql_table_name = "buste_paga_history"

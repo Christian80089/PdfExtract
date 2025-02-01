@@ -4,11 +4,15 @@ import pandas as pd
 import psycopg2
 
 # Configurazione del logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger()
 
 
-def create_database_and_table(host, port, user, password, db_name, new_db_name, table_name, table_schema):
+def create_database_and_table(
+    host, port, user, password, db_name, new_db_name, table_name, table_schema
+):
     try:
         # Connessione al database principale
         conn = psycopg2.connect(
@@ -46,7 +50,17 @@ def create_database_and_table(host, port, user, password, db_name, new_db_name, 
         logger.info("Errore:", e)
 
 
-def write_csv_to_table(host, port, user, password, db_name, table_name, csv_path, insert_query, delimiter=","):
+def write_csv_to_table(
+    host,
+    port,
+    user,
+    password,
+    db_name,
+    table_name,
+    csv_path,
+    insert_query,
+    delimiter=",",
+):
     try:
         # Connessione al database
         conn = psycopg2.connect(
@@ -56,8 +70,12 @@ def write_csv_to_table(host, port, user, password, db_name, table_name, csv_path
 
         # Leggi l'Excel con Pandas
         df = pd.read_csv(csv_path, sep=delimiter)
-        df = df.applymap(lambda x: str(x).replace(',', '.') if isinstance(x, str) else x)
-        df = df.apply(pd.to_numeric, errors='ignore')  # Converte le colonne numeriche, ignora quelle non numeriche
+        df = df.applymap(
+            lambda x: str(x).replace(",", ".") if isinstance(x, str) else x
+        )
+        df = df.apply(
+            pd.to_numeric, errors="ignore"
+        )  # Converte le colonne numeriche, ignora quelle non numeriche
 
         # Overwrite dei dati nella tabella
         cursor.execute(f"TRUNCATE TABLE {table_name}")
@@ -74,7 +92,9 @@ def write_csv_to_table(host, port, user, password, db_name, table_name, csv_path
         logger.error("Errore:", e)
 
 
-def write_df_to_table(host, port, user, password, db_name, table_name, df, insert_query):
+def write_df_to_table(
+    host, port, user, password, db_name, table_name, df, insert_query
+):
     try:
         # Connessione al database
         conn = psycopg2.connect(
@@ -83,8 +103,12 @@ def write_df_to_table(host, port, user, password, db_name, table_name, df, inser
         cursor = conn.cursor()
 
         # Usa df
-        df = df.applymap(lambda x: str(x).replace(',', '.') if isinstance(x, str) else x)
-        df = df.apply(pd.to_numeric, errors='ignore')  # Converte le colonne numeriche, ignora quelle non numeriche
+        df = df.applymap(
+            lambda x: str(x).replace(",", ".") if isinstance(x, str) else x
+        )
+        df = df.apply(
+            pd.to_numeric, errors="ignore"
+        )  # Converte le colonne numeriche, ignora quelle non numeriche
 
         # Overwrite dei dati nella tabella
         for _, row in df.iterrows():

@@ -14,7 +14,7 @@ light_copilot_info_to_extract = [
     "spese_trasporto_gestione_contatore (è un double, dettaglio specifico)",
     "spese_oneri (è un double, dettaglio specifico)",
     "altre_partite (è un double, dettaglio specifico)",
-    "imposte_iva (è un double, dettaglio specifico)"
+    "imposte_iva (è un double, dettaglio specifico)",
 ]
 
 light_df_mandatory_fields = [
@@ -32,7 +32,7 @@ light_df_mandatory_fields = [
     "spese_trasporto_gestione_contatore",
     "spese_oneri",
     "altre_partite",
-    "imposte_iva"
+    "imposte_iva",
 ]
 
 light_df_columns_to_select = [
@@ -52,7 +52,7 @@ light_df_columns_to_select = [
     "spese_oneri",
     "altre_partite",
     "imposte_iva",
-    "note"
+    "note",
 ]
 
 light_df_schema = {
@@ -72,7 +72,7 @@ light_df_schema = {
     "spese_oneri": float,
     "altre_partite": float,
     "imposte_iva": float,
-    "note": str
+    "note": str,
 }
 
 light_postgresql_table_name = "bollette_luce_history"

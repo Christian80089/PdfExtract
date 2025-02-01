@@ -3,11 +3,15 @@ import logging
 import pdfplumber
 
 # Configurazione del logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger()
 
 
-def extract_pdf_data(pdf_path, pages_to_extract=None, include_last_two=False, max_chars=8000):
+def extract_pdf_data(
+    pdf_path, pages_to_extract=None, include_last_two=False, max_chars=8000
+):
     """
     Estrae il testo da un file PDF specificato, con la possibilità di limitare l'estrazione
     a pagine specifiche, includere la penultima e l'ultima pagina e impostare un limite massimo di caratteri.
@@ -50,8 +54,10 @@ def extract_pdf_data(pdf_path, pages_to_extract=None, include_last_two=False, ma
             for i in valid_pages:
                 if len(full_text) >= max_chars:
                     break
-                page_text = pdf.pages[i].extract_text() or ""  # Evita None in caso di errori nella pagina
-                full_text += page_text[:max_chars - len(full_text)]
+                page_text = (
+                    pdf.pages[i].extract_text() or ""
+                )  # Evita None in caso di errori nella pagina
+                full_text += page_text[: max_chars - len(full_text)]
 
         logger.info(f"Estrazione completata, {len(full_text)} caratteri estratti.")
         return full_text

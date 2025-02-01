@@ -7,7 +7,9 @@ import pandas as pd
 from openpyxl.reader.excel import load_workbook
 
 # Configurazione del logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger()
 
 
@@ -22,7 +24,7 @@ def concat_fields(fields):
     str: Una stringa risultante dalla concatenazione dei campi.
     """
     logger.info("Concatenando i campi CSV.")
-    return ' - '.join(fields)
+    return " - ".join(fields)
 
 
 def load_processed_files(checkpoint_path):
@@ -38,23 +40,33 @@ def load_processed_files(checkpoint_path):
     processed_files = set()
 
     if os.path.isdir(checkpoint_path):
-        logger.info(f"Caricamento file elaborati da tutti i file di checkpoint nella cartella: {checkpoint_path}")
+        logger.info(
+            f"Caricamento file elaborati da tutti i file di checkpoint nella cartella: {checkpoint_path}"
+        )
         # Scansiona tutti i file nella cartella
         for root, _, files in os.walk(checkpoint_path):
             for file in files:
                 file_path = os.path.join(root, file)
                 if os.path.isfile(file_path):
-                    with open(file_path, 'r') as f:
+                    with open(file_path, "r") as f:
                         file_data = set(f.read().splitlines())
                         processed_files.update(file_data)
-                        logger.info(f"File di checkpoint caricato: {file} ({len(file_data)} file trovati).")
+                        logger.info(
+                            f"File di checkpoint caricato: {file} ({len(file_data)} file trovati)."
+                        )
     elif os.path.isfile(checkpoint_path):
-        logger.info(f"Caricamento file elaborati dal file di checkpoint: {checkpoint_path}")
-        with open(checkpoint_path, 'r') as f:
+        logger.info(
+            f"Caricamento file elaborati dal file di checkpoint: {checkpoint_path}"
+        )
+        with open(checkpoint_path, "r") as f:
             processed_files.update(f.read().splitlines())
-            logger.info(f"File elaborati caricati: {len(processed_files)} file trovati.")
+            logger.info(
+                f"File elaborati caricati: {len(processed_files)} file trovati."
+            )
     else:
-        logger.warning(f"Nessun file o cartella di checkpoint trovata: {checkpoint_path}. Restituisco un set vuoto.")
+        logger.warning(
+            f"Nessun file o cartella di checkpoint trovata: {checkpoint_path}. Restituisco un set vuoto."
+        )
 
     return processed_files
 
@@ -68,7 +80,7 @@ def update_checkpoint(checkpoint_file, new_files):
         new_files: Insieme dei nuovi file elaborati da aggiungere.
     """
     logger.info(f"Aggiornamento del checkpoint con {len(new_files)} nuovi file.")
-    with open(checkpoint_file, 'a') as f:
+    with open(checkpoint_file, "a") as f:
         for file in new_files:
             f.write(file + "\n")
     logger.info(f"Checkpoint aggiornato con successo: {checkpoint_file}")
@@ -84,7 +96,7 @@ def write_excel_from_df_in_append_mode(file_path, new_data):
     """
     if not os.path.exists(file_path):
         # Se il file non esiste, crea un nuovo file con i dati
-        new_data.to_excel(file_path, index=False, engine='openpyxl')
+        new_data.to_excel(file_path, index=False, engine="openpyxl")
         logger.info(f"File Excel creato: {file_path}")
     else:
         # Carica il file Excel esistente
@@ -95,7 +107,9 @@ def write_excel_from_df_in_append_mode(file_path, new_data):
         start_row = sheet.max_row + 1
 
         # Scrivi i nuovi dati sotto quelli esistenti
-        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+        with pd.ExcelWriter(
+            file_path, engine="openpyxl", mode="a", if_sheet_exists="overlay"
+        ) as writer:
             new_data.to_excel(writer, index=False, header=False, startrow=start_row - 1)
         logger.info(f"Nuovi dati aggiunti al file Excel: {file_path}")
 
@@ -113,15 +127,24 @@ def extract_date_from_filename(filename):
     try:
         # Mappa dei mesi in italiano
         mesi = {
-            "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4,
-            "maggio": 5, "giugno": 6, "luglio": 7, "agosto": 8,
-            "settembre": 9, "ottobre": 10, "novembre": 11, "dicembre": 12
+            "gennaio": 1,
+            "febbraio": 2,
+            "marzo": 3,
+            "aprile": 4,
+            "maggio": 5,
+            "giugno": 6,
+            "luglio": 7,
+            "agosto": 8,
+            "settembre": 9,
+            "ottobre": 10,
+            "novembre": 11,
+            "dicembre": 12,
         }
 
         # Estrarre il nome del mese e l'anno
         for mese, numero in mesi.items():
             if mese in filename.lower():
-                anno = re.search(r'\d{4}', filename).group()
+                anno = re.search(r"\d{4}", filename).group()
                 data = datetime(int(anno), numero, 1)  # Primo giorno del mese
                 return data.strftime("%d-%m-%Y")
 
@@ -148,7 +171,7 @@ def upsert_to_csv(dataframe, csv_path, key_column):
         return
 
     # Leggi i dati esistenti dal CSV
-    existing_data = pd.read_csv(csv_path, delimiter=';', header=0)
+    existing_data = pd.read_csv(csv_path, delimiter=";", header=0)
 
     # Trova i record nuovi (che non sono presenti nel CSV esistente)
     new_data = dataframe[~dataframe[key_column].isin(existing_data[key_column])]
@@ -160,6 +183,7 @@ def upsert_to_csv(dataframe, csv_path, key_column):
         logger.info(f"Aggiunti {len(new_data)} record nuovi a {csv_path}")
     else:
         logger.info("Nessun nuovo record da aggiungere.")
+
 
 def print_project_structure(directory, exclude_folders=None, indent=0, last_item=False):
     # Imposta una lista di cartelle da escludere, se non viene specificata ne usa una vuota
@@ -180,19 +204,21 @@ def print_project_structure(directory, exclude_folders=None, indent=0, last_item
         # Verifica se l'elemento è una directory
         if os.path.isdir(item_path):
             # Verifica se è l'ultimo elemento della directory per decidere il simbolo da usare
-            is_last_item = (i == len(items) - 1)
+            is_last_item = i == len(items) - 1
 
             # Aggiungi simboli di struttura per la leggibilità
             connector = "└── " if last_item else "├── "
-            line = '  ' * indent + (connector if is_last_item else "├── ") + item
+            line = "  " * indent + (connector if is_last_item else "├── ") + item
             print(line)
 
             # Chiamata ricorsiva per la directory
-            print_project_structure(item_path, exclude_folders, indent + 1, is_last_item)
+            print_project_structure(
+                item_path, exclude_folders, indent + 1, is_last_item
+            )
 
         # Includi solo i file .py
         elif item.endswith(".py"):
-            is_last_item = (i == len(items) - 1)
+            is_last_item = i == len(items) - 1
             connector = "└── " if last_item else "├── "
-            line = '  ' * indent + (connector if is_last_item else "├── ") + item
+            line = "  " * indent + (connector if is_last_item else "├── ") + item
             print(line)

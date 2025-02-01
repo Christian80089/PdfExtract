@@ -6,15 +6,23 @@ import numpy as np
 import pandas as pd
 
 from backend.resources.constants.common.Constants import df_default_values
-from backend.resources.constants.salary.RelatechConstants import relatech_df_mandatory_fields, relatech_df_schema
-from backend.resources.functions.DataFrameFunctions import select_columns_from_df, cast_columns_with_defaults
+from backend.resources.constants.salary.RelatechConstants import (
+    relatech_df_mandatory_fields,
+    relatech_df_schema,
+)
+from backend.resources.functions.DataFrameFunctions import (
+    select_columns_from_df,
+    cast_columns_with_defaults,
+)
 
 # Configura il logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger()
 
 # Imposta la localizzazione
-locale.setlocale(locale.LC_TIME, 'it_IT.UTF-8')
+locale.setlocale(locale.LC_TIME, "it_IT.UTF-8")
 
 
 def transform_df(df, columns_to_select):
@@ -31,10 +39,13 @@ def transform_df(df, columns_to_select):
     df["irpef_pagata"] = df["ritenute_irpef"]
     df["note"] = "Script completato con successo"
     df["concatenated_key"] = (
-        df["date_periodo_di_retribuzione"].astype(str) + "|" +
-        df["netto_del_mese"].astype(int).astype(str)
+        df["date_periodo_di_retribuzione"].astype(str)
+        + "|"
+        + df["netto_del_mese"].astype(int).astype(str)
     )
-    df["record_key"] = df["concatenated_key"].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
+    df["record_key"] = df["concatenated_key"].apply(
+        lambda x: hashlib.sha256(x.encode()).hexdigest()
+    )
 
     logger.info("Colonne aggiunte.")
 
@@ -42,18 +53,29 @@ def transform_df(df, columns_to_select):
     for field in relatech_df_mandatory_fields:
         missing_count = df[field].isnull().sum()
         if missing_count > 0:
-            logger.warning(f"Ci sono {missing_count} valori mancanti nella colonna '{field}'.")
+            logger.warning(
+                f"Ci sono {missing_count} valori mancanti nella colonna '{field}'."
+            )
         df["note"] = df.apply(
-            lambda row: row["note"] + f"; Verificare {field} mancante" if pd.isnull(row[field]) else row["note"], axis=1
+            lambda row: (
+                row["note"] + f"; Verificare {field} mancante"
+                if pd.isnull(row[field])
+                else row["note"]
+            ),
+            axis=1,
         )
 
     selected_df = select_columns_from_df(columns_to_select, df)
-    selected_df = cast_columns_with_defaults(selected_df, relatech_df_schema, df_default_values)
+    selected_df = cast_columns_with_defaults(
+        selected_df, relatech_df_schema, df_default_values
+    )
 
     # Arrotonda i valori float per eccesso a due cifre decimali
     for column, dtype in relatech_df_schema.items():
         if dtype == "float":
-            logger.info(f"Arrotondamento per eccesso della colonna '{column}' a due cifre decimali.")
+            logger.info(
+                f"Arrotondamento per eccesso della colonna '{column}' a due cifre decimali."
+            )
             selected_df[column] = np.ceil(selected_df[column] * 100) / 100
 
     logger.info(f"Selezionate {len(columns_to_select)} colonne: {columns_to_select}.")

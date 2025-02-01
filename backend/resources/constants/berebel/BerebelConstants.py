@@ -8,7 +8,7 @@ berebel_copilot_info_to_extract = [
     "km_da_pagare (è un intero ed è mandatory - è il terzo valore dei quattro)",
     "km_residui (è un intero ed è mandatory - è il quarto valore dei quattro)",
     "premio_di_conguaglio (è un double ed è mandatory)",
-    "totale_pagato (è un double ed è mandatory)"
+    "totale_pagato (è un double ed è mandatory)",
 ]
 
 berebel_df_mandatory_fields = [
@@ -21,7 +21,7 @@ berebel_df_mandatory_fields = [
     "km_da_pagare",
     "km_residui",
     "premio_di_conguaglio",
-    "totale_pagato"
+    "totale_pagato",
 ]
 
 berebel_df_columns_to_select = [
@@ -36,7 +36,7 @@ berebel_df_columns_to_select = [
     "km_residui",
     "premio_di_conguaglio",
     "totale_pagato",
-    "note"
+    "note",
 ]
 
 berebel_df_schema = {
@@ -51,7 +51,7 @@ berebel_df_schema = {
     "km_residui": int,
     "premio_di_conguaglio": float,
     "totale_pagato": float,
-    "note": str
+    "note": str,
 }
 
 berebel_postgresql_table_name = "berebel_history"

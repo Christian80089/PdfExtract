@@ -7,7 +7,7 @@ bank_copilot_info_to_extract = [
     "uscite (valori double)",
     "entrate (valori double)",
     "descrizione (estrai una breve descrizione che abbia senso per ogni movimento)",
-    "causale (prova a categorizzare il movimento dell'estratto conto)"
+    "causale (prova a categorizzare il movimento dell'estratto conto)",
 ]
 
 bank_df_mandatory_fields = [
@@ -19,7 +19,7 @@ bank_df_mandatory_fields = [
     "uscite",
     "entrate",
     "descrizione",
-    "causale"
+    "causale",
 ]
 
 bank_df_columns_to_select = [
@@ -33,7 +33,7 @@ bank_df_columns_to_select = [
     "entrate",
     "descrizione",
     "causale",
-    "note"
+    "note",
 ]
 
 bank_df_schema = {
@@ -47,7 +47,7 @@ bank_df_schema = {
     "entrate": float,
     "descrizione": str,
     "causale": str,
-    "note": str
+    "note": str,
 }
 
 bank_postgresql_table_name = "movimenti_banca_history"
