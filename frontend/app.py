@@ -4,10 +4,15 @@ from SalaryDashboard import *
 
 # Define file paths
 csv_paths = {
-    "Salary": get_csv_path("../backend/resources/output_data/salary/salary_history.csv"),
+    "Salary": get_csv_path(
+        "../backend/resources/output_data/salary/salary_history.csv"
+    ),
     "Bank Transactions": get_csv_path(
-        "../backend/resources/output_data/bank_transactions/ing/bank_transactions_history.csv"),
-    "BeRebel": get_csv_path("../backend/resources/output_data/berebel/berebel_history.csv"),
+        "../backend/resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
+    ),
+    "BeRebel": get_csv_path(
+        "../backend/resources/output_data/berebel/berebel_history.csv"
+    ),
 }
 # Load data
 salary_data = load_data(csv_paths["Salary"])
@@ -26,4 +31,6 @@ elif page == "Bank Transactions" and bank_transactions_data is not None:
 elif page == "BeRebel" and berebel_data is not None:
     berebel_dashboard(berebel_data)
 else:
-    st.warning(f"No data available for {page}. Check the file path or upload a valid CSV.")
+    st.warning(
+        f"No data available for {page}. Check the file path or upload a valid CSV."
+    )

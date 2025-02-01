@@ -7,92 +7,73 @@ def bank_transactions_charts(input_df):
     st.title("Bank Transactions Dashboard")
     st.header("General Statistics")
 
-    # Convert date column
-    input_df['data_operazione'] = pd.to_datetime(input_df['data_operazione'])
+    start_date, end_date = date_range_filter(input_df, "data_operazione")
+    selected_categories = multiselect_from_dataframe("Categories", input_df, "causale", sidebar=True, default=["Select All"])
 
-    # Date range selection
-    st.sidebar.header("Filter by Period")
-    start_date, end_date = st.sidebar.date_input(
-        "Select Date Range",
-        [input_df['data_operazione'].min(), input_df['data_operazione'].max()]
-    )
-
-    # Filter by company
-    st.sidebar.header("Filter by Category")
-    company_options = input_df['causale'].unique()
-    select_all_option = "All"
-    company_options_with_select_all = [select_all_option] + list(company_options)
-    selected_categories = st.sidebar.multiselect(
-        "Select Categories",
-        options=company_options_with_select_all,
-        default=select_all_option
-    )
-    if select_all_option in selected_categories:
-        selected_categories = list(company_options)
-
-    # Filter data based on date range and company
-    filtered_data = input_df[
-        (input_df['data_operazione'] >= pd.to_datetime(start_date)) &
-        (input_df['data_operazione'] <= pd.to_datetime(end_date)) &
+    # Filter data based on date range
+    dynamic_dataframe = input_df[
+        (input_df['data_operazione'].between(start_date, end_date)) &
         (input_df['causale'].isin(selected_categories))
         ]
 
     today = pd.Timestamp.today()
-    six_months_ago = today - pd.DateOffset(months=6)
-    start_of_six_months_ago = six_months_ago.replace(day=1)
+    start_of_period = (today - pd.DateOffset(months=6)).replace(day=1)
 
-    chart_filtered_data = input_df[
-        (input_df['data_operazione'] >= start_of_six_months_ago) &
-        (input_df['data_operazione'] <= today) &
+    static_dataframe = input_df[
+        (input_df['data_operazione'].between(start_of_period, today)) &
         (input_df['causale'].isin(selected_categories))
         ]
 
-    chart_filtered_data = chart_filtered_data.copy()
+    # Clean and convert columns
+    dynamic_dataframe = clean_and_convert(dynamic_dataframe, ['entrate', 'uscite'])
+    static_dataframe = clean_and_convert(static_dataframe, ['entrate', 'uscite'])
 
     # Calculate key metrics
-    filtered_data['entrate'] = filtered_data['entrate'].str.replace(',', '.', regex=False)
-    filtered_data['uscite'] = filtered_data['uscite'].str.replace(',', '.', regex=False)
-    filtered_data['entrate'] = pd.to_numeric(filtered_data['entrate'], errors='coerce')
-    filtered_data['uscite'] = pd.to_numeric(filtered_data['uscite'], errors='coerce')
-    filtered_data['entrate'] = filtered_data['entrate'].fillna(0)
-    filtered_data['uscite'] = filtered_data['uscite'].fillna(0)
-
-    chart_filtered_data['entrate'] = chart_filtered_data['entrate'].str.replace(',', '.', regex=False)
-    chart_filtered_data['uscite'] = chart_filtered_data['uscite'].str.replace(',', '.', regex=False)
-    chart_filtered_data['entrate'] = pd.to_numeric(chart_filtered_data['entrate'], errors='coerce')
-    chart_filtered_data['uscite'] = pd.to_numeric(chart_filtered_data['uscite'], errors='coerce')
-    chart_filtered_data['entrate'] = chart_filtered_data['entrate'].fillna(0)
-    chart_filtered_data['uscite'] = chart_filtered_data['uscite'].fillna(0)
-
-    total_income = filtered_data['entrate'].sum()
-    total_expenses = filtered_data['uscite'].sum()
+    total_income = dynamic_dataframe['entrate'].sum()
+    total_expenses = dynamic_dataframe['uscite'].sum()
     balance = total_income + total_expenses
-    filtered_data['month'] = filtered_data['data_operazione'].dt.to_period('M').astype(str)
-    chart_filtered_data['month'] = chart_filtered_data['data_operazione'].dt.to_period('M').astype(str)
-    monthly_stats = filtered_data.groupby('month').agg({'entrate': 'sum', 'uscite': 'sum'})
+
+    dynamic_dataframe['month'] = dynamic_dataframe['data_operazione'].dt.to_period('M').astype(str)
+    static_dataframe['month'] = static_dataframe['data_operazione'].dt.to_period('M').astype(str)
+
+    monthly_stats = dynamic_dataframe.groupby('month').agg({'entrate': 'sum', 'uscite': 'sum'})
     average_monthly_income = monthly_stats['entrate'].mean()
     average_monthly_expenses = monthly_stats['uscite'].mean()
     average_balance = average_monthly_income + average_monthly_expenses
 
-    # Display key metrics
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Income", f"{format_number(total_income)} €")
-    col2.metric("Total Expenses", f"{format_number(total_expenses)} €")
-    col3.metric("Balance", f"{format_number(balance):} €")
+    # Calculate and format key metrics
+    metrics = {
+        "Total Income": total_income,
+        "Total Expenses": total_expenses,
+        "Balance": balance,
+        "Average Monthly Income": average_monthly_income,
+        "Average Monthly Expenses": average_monthly_expenses,
+        "Average Balance": average_balance
+    }
 
-    col4, col5, col6 = st.columns(3)
-    col4.metric("Average Monthly Income", f"{format_number(average_monthly_income)} €")
-    col5.metric("Average Monthly Expenses", f"{format_number(average_monthly_expenses)} €")
-    col6.metric("Avarege Balance", f"{format_number(average_balance):} €")
+    formatted_metrics = format_number(pd.DataFrame([metrics]), list(metrics.keys())).iloc[0]
 
+    cols = st.columns(3)
+    metrics_labels = [
+        ("Total Income (€)", "Total Income"),
+        ("Total Expenses (€)", "Total Expenses"),
+        ("Balance (€)", "Balance"),
+        ("Average Monthly Income (€)", "Average Monthly Income"),
+        ("Average Monthly Expenses (€)", "Average Monthly Expenses"),
+        ("Average Balance (€)", "Average Balance")
+    ]
+
+    for i, (label, key) in enumerate(metrics_labels):
+        cols[i % 3].metric(label, f"{formatted_metrics[key]} €")
+    
     # Monthly Expenses Trend
-    df_aggregated = chart_filtered_data.groupby('month', as_index=False).agg({'uscite': 'sum'})
+    df_aggregated = static_dataframe.groupby('month', as_index=False).agg({'uscite': 'sum'})
     fig = px.bar(
         df_aggregated,
         x='month',
         y='uscite',
         title='Monthly Expenses Trend',
-        labels={"month": "Month", "uscite": "Expenses (€)"},
+        labels={"month": "Period", "uscite": "Expenses (€)"},
         color_discrete_sequence=["red"]
     )
 
@@ -105,13 +86,13 @@ def bank_transactions_charts(input_df):
     st.plotly_chart(fig)
 
     # Monthly Income Trend
-    df_aggregated = chart_filtered_data.groupby('month', as_index=False).agg({'entrate': 'sum'})
+    df_aggregated = static_dataframe.groupby('month', as_index=False).agg({'entrate': 'sum'})
     fig = px.bar(
         df_aggregated,
         x='month',
         y='entrate',
         title='Monthly Income Trend',
-        labels={"month": "Month", "entrate": "Income (€)"},
+        labels={"month": "Period", "entrate": "Income (€)"},
         color_discrete_sequence=["green"]
     )
 
@@ -124,7 +105,7 @@ def bank_transactions_charts(input_df):
     st.plotly_chart(fig)
 
     # Expenses Pie Chart
-    df_category_expenses = filtered_data.groupby('causale', as_index=False).agg({'uscite': 'sum'})
+    df_category_expenses = dynamic_dataframe.groupby('causale', as_index=False).agg({'uscite': 'sum'})
     df_category_expenses['uscite'] = df_category_expenses['uscite'].abs()
     df_category_expenses = df_category_expenses[df_category_expenses['uscite'] != 0]
     fig_pie = px.pie(
