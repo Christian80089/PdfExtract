@@ -17,7 +17,12 @@ locale.setlocale(locale.LC_TIME, "it_IT.UTF-8")
 
 def transform_df(df, columns_to_select, extracted_date):
     logger.info("Inizio della trasformazione del DataFrame.")
-
+    
+    df = df[
+        ~df["DESCRIZIONE OPERAZIONE"].str.contains(
+            "Saldo iniziale|Saldo finale", case=True, na=True
+        )
+    ]
     # Aggiungi colonne al DataFrame
     df["banca"] = "Ing Arancio"
     df["numero_conto_corrente"] = "2686433"
@@ -41,10 +46,8 @@ def transform_df(df, columns_to_select, extracted_date):
 
     df["causale"] = df["CAUSALE"]
     df["note"] = "File Estratto Conto Trimestrale - Script completato con successo"
-    df["data_operazione"] = pd.to_datetime(df["DATA VALUTA"], format="%d/%m/%Y")
-    df["data_operazione"] = df["DATA VALUTA"].apply(
-        lambda x: pd.to_datetime(f"01-{x}", format="%d/%m/%Y").date()
-    )
+    df["data_operazione"] = pd.to_datetime(df["DATA VALUTA"], format="%d/%m/%Y").dt.strftime("%Y-%m-%d")
+
     df["concatenated_key"] = (
         df["data_operazione"].astype(str)
         + "|"
@@ -60,14 +63,8 @@ def transform_df(df, columns_to_select, extracted_date):
         lambda x: hashlib.sha256(x.encode()).hexdigest()
     )
     df["data_estratto_conto"] = extracted_date  # Aggiungi la colonna con la data
-    df["data_estratto_conto"] = df["data_estratto_conto"].apply(
-        lambda x: pd.to_datetime(f"01-{x}", format="%d/%m/%Y").date()
-    )
-    df_filtered = df[
-        ~df["descrizione"].str.contains(
-            "Saldo iniziale|Saldo finale", case=True, na=True
-        )
-    ]
+    df["data_estratto_conto"] = pd.to_datetime(df["data_estratto_conto"])  # Converti la colonna in formato datetime
+    df["data_estratto_conto"] = df["data_estratto_conto"].dt.strftime("%d/%m/%Y")  # Applica il formato desiderato
 
     logger.info("Colonne base aggiunte")
 
@@ -87,7 +84,7 @@ def transform_df(df, columns_to_select, extracted_date):
             axis=1,
         )
 
-    selected_df = select_columns_from_df(columns_to_select, df_filtered)
+    selected_df = select_columns_from_df(columns_to_select, df)
     selected_df = cast_columns_with_defaults(
         selected_df, bank_df_schema, df_default_values
     )

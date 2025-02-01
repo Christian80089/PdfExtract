@@ -164,6 +164,8 @@ def upsert_to_csv(dataframe, csv_path, key_column):
     :param csv_path: Percorso del file CSV.
     :param key_column: Nome della colonna chiave per l'unicità.
     """
+    logger.info(f"Inizio upsert del DataFrame nel file {csv_path} con chiave '{key_column}'.")
+
     if not os.path.exists(csv_path):
         # Se il file non esiste, crea il CSV con i dati del DataFrame
         dataframe.to_csv(csv_path, index=False)
@@ -171,16 +173,34 @@ def upsert_to_csv(dataframe, csv_path, key_column):
         return
 
     # Leggi i dati esistenti dal CSV
-    existing_data = pd.read_csv(csv_path, delimiter=";", header=0)
+    logger.info(f"Leggendo i dati esistenti dal file {csv_path}.")
+    try:
+        existing_data = pd.read_csv(csv_path, delimiter=",", header=0)
+        logger.info(f"File {csv_path} letto con successo. Numero di righe esistenti: {len(existing_data)}")
+    except Exception as e:
+        logger.error(f"Errore durante la lettura del file {csv_path}: {e}")
+        return
+
+    # Verifica se la colonna chiave esiste nel CSV esistente
+    if key_column not in existing_data.columns:
+        logger.error(f"La colonna '{key_column}' non esiste nel CSV esistente.")
+        return
+    else:
+        logger.info(f"La colonna '{key_column}' trovata nel CSV esistente.")
 
     # Trova i record nuovi (che non sono presenti nel CSV esistente)
+    logger.info(f"Trovo i nuovi record che non sono presenti nel CSV.")
     new_data = dataframe[~dataframe[key_column].isin(existing_data[key_column])]
 
     if not new_data.empty:
+        logger.info(f"Trovati {len(new_data)} nuovi record da aggiungere.")
         # Aggiungi solo i nuovi record al CSV
-        updated_data = pd.concat([existing_data, new_data], ignore_index=True)
-        updated_data.to_csv(csv_path, index=False)
-        logger.info(f"Aggiunti {len(new_data)} record nuovi a {csv_path}")
+        try:
+            updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+            updated_data.to_csv(csv_path, index=False)
+            logger.info(f"Aggiunti {len(new_data)} record nuovi a {csv_path}. Il file è stato aggiornato.")
+        except Exception as e:
+            logger.error(f"Errore durante l'aggiornamento del file CSV: {e}")
     else:
         logger.info("Nessun nuovo record da aggiungere.")
 

@@ -4,3 +4,4 @@ ing-giugno2024.csv
 ing-marzo2024.csv
 ing-settembre2024.csv
 deutsche-dicembre2024.csv
+ing-gennaio2025.csv

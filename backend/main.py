@@ -35,8 +35,8 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 if __name__ == "__main__":
-    input_data_folder_path = "resources/input_data"
-    checkpoints_folder_path = "resources/checkpoints"
+    input_data_folder_path = "backend/resources/input_data"
+    checkpoints_folder_path = "backend/resources/checkpoints"
 
     new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
     processed_files = []
@@ -67,8 +67,8 @@ if __name__ == "__main__":
                             file_path, delimiter=";", header=0
                         )  # Crea il DataFrame solo con i dati del file corrente
                         if "bank_transactions" in root.lower():
-                            checkpoint_file = "resources/checkpoints/bank_transactions_processed_files.txt"
-                            output_path = "resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
+                            checkpoint_file = "backend/resources/checkpoints/bank_transactions_processed_files.txt"
+                            output_path = "backend/resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
                             transformed_df = IngTransform.transform_df(
                                 df, bank_df_columns_to_select, extracted_date
                             )
@@ -80,10 +80,10 @@ if __name__ == "__main__":
                             )
                         elif "berebel" in root.lower():
                             checkpoint_file = (
-                                "resources/checkpoints/berebel_processed_files.txt"
+                                "backend/resources/checkpoints/berebel_processed_files.txt"
                             )
                             output_path = (
-                                "resources/output_data/berebel/berebel_history.csv"
+                                "backend/resources/output_data/berebel/berebel_history.csv"
                             )
                             transformed_df = BerebelTransform.transform_df(
                                 df, berebel_df_columns_to_select
@@ -98,9 +98,9 @@ if __name__ == "__main__":
                             )
                         elif "light_bills" in root.lower():
                             checkpoint_file = (
-                                "resources/checkpoints/light_bills_processed_files.txt"
+                                "backend/resources/checkpoints/light_bills_processed_files.txt"
                             )
-                            output_path = "resources/output_data/light_bills/light_bills_history.csv"
+                            output_path = "backend/resources/output_data/light_bills/light_bills_history.csv"
                             transformed_df = EnelTransform.transform_df(
                                 df, light_df_columns_to_select
                             )
@@ -112,10 +112,10 @@ if __name__ == "__main__":
                             )
                         elif "salary" in root.lower():
                             checkpoint_file = (
-                                "resources/checkpoints/salary_processed_files.txt"
+                                "backend/resources/checkpoints/salary_processed_files.txt"
                             )
                             output_path = (
-                                "resources/output_data/salary/salary_history.csv"
+                                "backend/resources/output_data/salary/salary_history.csv"
                             )
                             transformed_df = RelatechTransform.transform_df(
                                 df, relatech_df_columns_to_select
@@ -136,7 +136,7 @@ if __name__ == "__main__":
                         formatted_text = re.sub(r"\s+", " ", text).strip()
 
                         if "bank_transactions" in root.lower():
-                            checkpoint_file = "resources/checkpoints/bank_transactions_processed_files.txt"
+                            checkpoint_file = "backend/resources/checkpoints/bank_transactions_processed_files.txt"
                             # Interazione con Copilot
                             response_copilot = run_copilot(
                                 formatted_text, bank_copilot_info_to_extract
@@ -146,7 +146,7 @@ if __name__ == "__main__":
                             df = pd.DataFrame(
                                 [data]
                             )  # Crea il DataFrame solo con i dati del file corrente
-                            output_path = "resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
+                            output_path = "backend/resources/output_data/bank_transactions/ing/bank_transactions_history.csv"
                             transformed_df = IngTransform.transform_df(
                                 df, bank_df_columns_to_select, extracted_date
                             )
@@ -158,7 +158,7 @@ if __name__ == "__main__":
                             )
                         elif "berebel" in root.lower():
                             checkpoint_file = (
-                                "resources/checkpoints/berebel_processed_files.txt"
+                                "backend/resources/checkpoints/berebel_processed_files.txt"
                             )
                             # Interazione con Copilot
                             response_copilot = run_copilot(
@@ -170,7 +170,7 @@ if __name__ == "__main__":
                                 [data]
                             )  # Crea il DataFrame solo con i dati del file corrente
                             output_path = (
-                                "resources/output_data/berebel/berebel_history.csv"
+                                "backend/resources/output_data/berebel/berebel_history.csv"
                             )
                             transformed_df = BerebelTransform.transform_df(
                                 df, berebel_df_columns_to_select
@@ -185,7 +185,7 @@ if __name__ == "__main__":
                             )
                         elif "light_bills" in root.lower():
                             checkpoint_file = (
-                                "resources/checkpoints/light_bills_processed_files.txt"
+                                "backend/resources/checkpoints/light_bills_processed_files.txt"
                             )
                             # Interazione con Copilot
                             response_copilot = run_copilot(
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                             df = pd.DataFrame(
                                 [data]
                             )  # Crea il DataFrame solo con i dati del file corrente
-                            output_path = "resources/output_data/light_bills/light_bills_history.csv"
+                            output_path = "backend/resources/output_data/light_bills/light_bills_history.csv"
                             transformed_df = EnelTransform.transform_df(
                                 df, light_df_columns_to_select
                             )
@@ -208,7 +208,7 @@ if __name__ == "__main__":
                             )
                         elif "salary" in root.lower():
                             checkpoint_file = (
-                                "resources/checkpoints/salary_processed_files.txt"
+                                "backend/resources/checkpoints/salary_processed_files.txt"
                             )
                             # Interazione con Copilot
                             response_copilot = run_copilot(
@@ -220,7 +220,7 @@ if __name__ == "__main__":
                                 [data]
                             )  # Crea il DataFrame solo con i dati del file corrente
                             output_path = (
-                                "resources/output_data/salary/salary_history.csv"
+                                "backend/resources/output_data/salary/salary_history.csv"
                             )
                             transformed_df = RelatechTransform.transform_df(
                                 df, relatech_df_columns_to_select

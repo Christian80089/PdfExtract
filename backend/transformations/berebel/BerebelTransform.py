@@ -29,7 +29,7 @@ def transform_df(df, columns_to_select):
 
     # Aggiungi colonne al DataFrame
     df["note"] = "Script completato con successo"
-    df["data_estratto_conto"] = df["periodo_estratto_conto"].apply(
+    df["date_estratto_conto"] = df["periodo_estratto_conto"].apply(
         lambda x: pd.to_datetime(f"01-{x}", format="%d-%B %Y").date()
     )
 
