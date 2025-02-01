@@ -1,32 +1,32 @@
 import json
 
-from backend.resources.constants.bank_transactions.BankConstants import (
+from resources.constants.bank_transactions.BankConstants import (
     bank_key_field,
     bank_df_columns_to_select,
     bank_copilot_info_to_extract,
 )
-from backend.resources.constants.berebel.BerebelConstants import (
+from resources.constants.berebel.BerebelConstants import (
     berebel_key_field,
     berebel_df_columns_to_select,
     berebel_copilot_info_to_extract,
 )
-from backend.resources.constants.light_bills.LightBillsConstants import (
+from resources.constants.light_bills.LightBillsConstants import (
     light_key_field,
     light_df_columns_to_select,
     light_copilot_info_to_extract,
 )
-from backend.resources.constants.salary.RelatechConstants import (
+from resources.constants.salary.RelatechConstants import (
     relatech_df_columns_to_select,
     relatech_key_field,
     relatech_copilot_info_to_extract,
 )
-from backend.resources.functions.CopilotFunctions import run_copilot
-from backend.resources.functions.PdfFunctions import extract_pdf_data
-from backend.transformations.bank_transactions import IngTransform
-from backend.transformations.berebel import BerebelTransform
-from backend.transformations.light_bills import EnelTransform
-from backend.transformations.salary import RelatechTransform
-from backend.resources.functions.Functions import *
+from resources.functions.CopilotFunctions import run_copilot
+from resources.functions.PdfFunctions import extract_pdf_data
+from transformations.bank_transactions import IngTransform
+from transformations.berebel import BerebelTransform
+from transformations.light_bills import EnelTransform
+from transformations.salary import RelatechTransform
+from resources.functions.Functions import *
 
 # Configurazione del logger
 logging.basicConfig(
@@ -35,8 +35,8 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 if __name__ == "__main__":
-    input_data_folder_path = "../resources/input_data"
-    checkpoints_folder_path = "resources/checkpoints/"
+    input_data_folder_path = "resources/input_data"
+    checkpoints_folder_path = "resources/checkpoints"
 
     new_files_processed = False  # Flag per verificare se ci sono nuovi file processati
     processed_files = []

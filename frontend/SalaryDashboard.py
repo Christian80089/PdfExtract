@@ -22,6 +22,7 @@ def salary_dashboard(input_df):
         (input_df["date_periodo_di_retribuzione"].between(start_date, end_date))
         & (input_df["ragione_sociale_azienda"].isin(selected_company))
     ]
+    dynamic_dataframe = dynamic_dataframe.copy()
 
     today = pd.Timestamp.today()
     start_of_period = (today - pd.DateOffset(months=7)).replace(day=1)
@@ -30,6 +31,7 @@ def salary_dashboard(input_df):
         (input_df["date_periodo_di_retribuzione"].between(start_of_period, today))
         & (input_df["ragione_sociale_azienda"].isin(selected_company))
     ]
+    static_dataframe = static_dataframe.copy()
 
     # Calculate and format key metrics
     metrics = {

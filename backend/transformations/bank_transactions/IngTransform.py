@@ -1,9 +1,9 @@
 import hashlib
 import locale
 
-from backend.resources.constants.bank_transactions.BankConstants import *
-from backend.resources.constants.common.Constants import *
-from backend.resources.functions.DataFrameFunctions import *
+from resources.constants.bank_transactions.BankConstants import *
+from resources.constants.common.Constants import *
+from resources.functions.DataFrameFunctions import *
 
 # Configura il logger
 logging.basicConfig(

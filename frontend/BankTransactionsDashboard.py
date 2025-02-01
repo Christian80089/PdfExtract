@@ -17,6 +17,7 @@ def bank_transactions_charts(input_df):
         (input_df["data_operazione"].between(start_date, end_date))
         & (input_df["causale"].isin(selected_categories))
     ]
+    dynamic_dataframe = dynamic_dataframe.copy()
 
     today = pd.Timestamp.today()
     start_of_period = (today - pd.DateOffset(months=6)).replace(day=1)
@@ -25,6 +26,7 @@ def bank_transactions_charts(input_df):
         (input_df["data_operazione"].between(start_of_period, today))
         & (input_df["causale"].isin(selected_categories))
     ]
+    static_dataframe = static_dataframe.copy()
 
     # Clean and convert columns
     dynamic_dataframe = clean_and_convert(dynamic_dataframe, ["entrate", "uscite"])

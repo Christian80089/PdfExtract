@@ -5,12 +5,12 @@ import logging
 import numpy as np
 import pandas as pd
 
-from backend.resources.constants.common.Constants import df_default_values
-from backend.resources.constants.salary.RelatechConstants import (
+from resources.constants.common.Constants import df_default_values
+from resources.constants.salary.RelatechConstants import (
     relatech_df_mandatory_fields,
     relatech_df_schema,
 )
-from backend.resources.functions.DataFrameFunctions import (
+from resources.functions.DataFrameFunctions import (
     select_columns_from_df,
     cast_columns_with_defaults,
 )
