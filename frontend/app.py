@@ -1,31 +1,29 @@
-import os
+from BankTransactionsDashboard import *
 from BeRebelDashboard import *
 from SalaryDashboard import *
-from BankTransactionsDashboard import *
 
-# CSV file path in the resources folder
-base_path = os.path.abspath(os.path.dirname(__file__))
-salary_csv_path = os.path.join(base_path, "../backend/resources/output_data/salary/salary_history.csv")
-bank_transactions_ing_csv_path = os.path.join(base_path, "../backend/resources/output_data/bank_transactions/ing/bank_transactions_history.csv")
-berebel_csv_path = os.path.join(base_path, "../backend/resources/output_data/berebel/berebel_history.csv")
-
-
+# Define file paths
+csv_paths = {
+    "Salary": get_csv_path("../backend/resources/output_data/salary/salary_history.csv"),
+    "Bank Transactions": get_csv_path(
+        "../backend/resources/output_data/bank_transactions/ing/bank_transactions_history.csv"),
+    "BeRebel": get_csv_path("../backend/resources/output_data/berebel/berebel_history.csv"),
+}
 # Load data
-salary_data = load_data(salary_csv_path)
-bank_transactions_data = load_data(bank_transactions_ing_csv_path)
-berebel_data = load_data(berebel_csv_path)
+salary_data = load_data(csv_paths["Salary"])
+bank_transactions_data = load_data(csv_paths["Bank Transactions"])
+berebel_data = load_data(csv_paths["BeRebel"])
 
-# Sidebar for navigation
+# Sidebar navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select Page", ["Salary Dashboard", "Bank Transactions Dashboard", "BeRebel Dashboard"])
+page = st.sidebar.radio("Select Page", csv_paths.keys())
 
-# Display selected page
-if salary_data is not None:
-    if page == "Salary Dashboard":
-        salary_dashboard(salary_data)
-    elif page == "Bank Transactions Dashboard":
-        bank_transactions_charts(bank_transactions_data)
-    elif page == "BeRebel Dashboard":
-        berebel_dashboard(berebel_data)
+# Display selected dashboard
+if page == "Salary" and salary_data is not None:
+    salary_dashboard(salary_data)
+elif page == "Bank Transactions" and bank_transactions_data is not None:
+    bank_transactions_charts(bank_transactions_data)
+elif page == "BeRebel" and berebel_data is not None:
+    berebel_dashboard(berebel_data)
 else:
-    st.warning(f"Upload a CSV file to start or check the path: Root: {base_path} - Folder: {salary_csv_path}")
+    st.warning(f"No data available for {page}. Check the file path or upload a valid CSV.")
