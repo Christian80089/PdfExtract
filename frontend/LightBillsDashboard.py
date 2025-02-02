@@ -138,3 +138,31 @@ def light_bills_dashboard(input_df):
     fig.update_traces(texttemplate="%{y:.0f}", textposition="outside")
     fig.update_layout(xaxis=dict(tickangle=45), barmode='group')
     st.plotly_chart(fig)
+    
+    fig = px.bar(
+        df_aggregated,
+        x="periodo_fornitura",
+        y=["kWh_consumati_totali", "spese_per_energia"],
+        title="Comparison Consumption Trend",
+        labels={"periodo_fornitura": "Supply Period", "value": "Consumption"},
+        color_discrete_sequence=["orange", "yellow"],
+    )
+    
+    fig.for_each_trace(lambda t: t.update(name={
+        "kWh_consumati_totali": "Total kW/h Consumed",
+        "spese_per_energia": "Energy Costs €"
+    }[t.name]))
+    
+    fig.update_traces(texttemplate="%{y:.2f}", textposition="inside")
+    fig.update_layout(xaxis=dict(tickangle=45), barmode='group')
+    st.plotly_chart(fig)
+    
+    dynamic_dataframe['numero_fattura'] = dynamic_dataframe['numero_fattura'].astype(str)
+    dynamic_dataframe = dynamic_dataframe.sort_values(
+        by="data_fattura", ascending=False
+    )
+    dynamic_dataframe.columns = [
+        col.replace("_", " ").title() for col in dynamic_dataframe.columns
+    ]
+
+    st.dataframe(dynamic_dataframe)

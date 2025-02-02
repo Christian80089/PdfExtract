@@ -1,7 +1,7 @@
 from BankTransactionsDashboard import *
 from BeRebelDashboard import *
 from SalaryDashboard import *
-from frontend.LightBillsDashboard import *
+from LightBillsDashboard import *
 
 # Define file paths
 csv_paths = {
