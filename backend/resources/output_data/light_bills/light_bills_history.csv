@@ -1,7 +1,7 @@
 ﻿numero_fattura,fornitore,periodo_fornitura,data_fattura,prezzo_unitario_kWh,totale_da_pagare,kWh_consumati_totali,kWh_F1_consumati,kWh_F2_consumati,kWh_F3_consumati,canone_tv,spese_per_energia,spese_trasporto_gestione_contatore,spese_oneri,altre_partite,imposte_iva,note
 5048190039,Enel Energia,APR. 2024 - MAG. 2024,2024-06-10,"0,17273","102,46",32,16,6,10,"23,37","22,55","11,04","1,24","38,48","5,78",Script completato con successo
 5058883720,Enel Energia,Giugno 2024,2024-07-14,"0,17273","8,21",12,7,2,3,"0,00","13,50","7,59","0,47","-15,51","2,16",Script completato con successo
-2430698065,ENI Plenitude,Luglio 2024,2024-08-08,"0,12000","38,49",36,0,0,0,"0,00","17,27","7,88","9,02","0,00","3,50",Script completato con successo
+2430698065,ENI Plenitude,Luglio 2024,2024-08-08,"0,12000","38,49",36,12,9,15,"0,00","17,27","7,88","9,02","0,00","3,50",Script completato con successo
 5077552661,Enel Energia,AGO. 2024 - SET. 2024,2024-10-08,"0,08909","54,28",21,10,5,6,"7,79","26,31","15,14","0,81","0,00","4,23",Script completato con successo
 2439594063,ENI Plenitude,Agosto 2024,2024-10-25,"0,00000","7,79",0,0,0,0,"7,79","0,00","0,00","0,00","0,00","0,00",Script completato con successo
 5099288563,Enel Energia,OTT. 2024 - NOV. 2024,2024-12-11,"0,08909","64,23",35,20,10,5,"15,58","27,56","15,31","1,36","0,00","4,42",Script completato con successo

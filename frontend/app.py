@@ -1,6 +1,7 @@
 from BankTransactionsDashboard import *
 from BeRebelDashboard import *
 from SalaryDashboard import *
+from LighBillsDashboard import *
 
 # Define file paths
 csv_paths = {
@@ -13,11 +14,15 @@ csv_paths = {
     "BeRebel": get_csv_path(
         "../backend/resources/output_data/berebel/berebel_history.csv"
     ),
+    "Light Bills": get_csv_path(
+    "../backend/resources/output_data/light_bills/light_bills_history.csv"
+    ),
 }
 # Load data
 salary_data = load_data(csv_paths["Salary"])
 bank_transactions_data = load_data(csv_paths["Bank Transactions"])
 berebel_data = load_data(csv_paths["BeRebel"])
+light_bills_data = load_data(csv_paths["Light Bills"])
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
@@ -30,6 +35,8 @@ elif page == "Bank Transactions" and bank_transactions_data is not None:
     bank_transactions_charts(bank_transactions_data)
 elif page == "BeRebel" and berebel_data is not None:
     berebel_dashboard(berebel_data)
+elif page == "Light Bills" and light_bills_data is not None:
+    light_bills_dashboard(light_bills_data)
 else:
     st.warning(
         f"No data available for {page}. Check the file path or upload a valid CSV."
