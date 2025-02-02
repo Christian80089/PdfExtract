@@ -5,7 +5,7 @@ from Utils import *
 
 # Function for the main dashboard
 def light_bills_dashboard(input_df):
-    st.title("Ligh Bills Dashboard")
+    st.title("Light Bills Dashboard")
     st.header("General Statistics")
 
     start_date, end_date = date_range_filter(input_df, "data_fattura")

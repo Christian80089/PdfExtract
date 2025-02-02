@@ -5,7 +5,7 @@ from Utils import *
 
 # Function for the main dashboard
 def salary_dashboard(input_df):
-    st.title("Salary Dashboard Analysis")
+    st.title("Salary Dashboard")
     st.header("General Statistics")
 
     start_date, end_date = date_range_filter(input_df, "date_periodo_di_retribuzione")

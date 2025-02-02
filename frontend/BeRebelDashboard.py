@@ -4,7 +4,7 @@ from Utils import *
 
 
 def berebel_dashboard(input_df):
-    st.title("Berebel Dashboard Analysis")
+    st.title("Berebel Dashboard")
     st.header("General Statistics")
 
     start_date, end_date = date_range_filter(input_df, "date_estratto_conto")
